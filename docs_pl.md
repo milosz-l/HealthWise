@@ -76,3 +76,34 @@ Nasz zespół planuje wzięcie udziału w hackathonie, który odbywa się na pla
 Celem wydarzenia jest stworzenie ekosystemu zdrowotnego, który integruje różne aspekty opieki medycznej, płatności, zdrowia publicznego, bezpieczeństwa pacjentów i badań klinicznych przy pomocy sztucznej inteligencji. Rozwiązania te mają oferować większą kontrolę prywatności, poprawiać zdrowie przy niższych kosztach oraz promować równość zdrowotną.
 
 Hackathon jest otwarty do 24 listopada. Informacje o hackathonie są dostępne pod [linkiem](https://lablab.ai/event/lokahi-innovation-in-healthcare).
+
+## Raport B - wymagania, GAIA, BPMN
+
+### Wymagania
+
+#### 1. Wymagania funkcjonalne
+
+- **Zgłaszanie objawów**: System powinien umożliwiać użytkownikom zgłaszanie objawów za pomocą intuicyjnego interfejsu.
+- **Analiza danych zdrowotnych**: System musi gromadzić i analizować dane w czasie rzeczywistym.
+- **Wsparcie dla służb zdrowia**: System powinien dostarczać informacji instytucjom medycznym i badaczom.
+- **Rekomendacje dla użytkowników**: System powinien oferować użytkownikom rekomendacje dotyczące dalszych kroków.
+
+#### 2. Wymagania niefunkcjonalne
+
+- **Skalowalność**: System musi być w stanie obsłużyć dużą liczbę użytkowników jednocześnie.
+- **Bezpieczeństwo**: Dane użytkowników muszą być chronione zgodnie z obowiązującymi przepisami o ochronie danych.
+- **Dostępność**: System powinien być dostępny 24/7.
+- **Użyteczność**: Interfejs użytkownika powinien być prosty i intuicyjny.
+
+#### 3. Wymagania techniczne
+
+- **Integracja z LLM**: System powinien wykorzystywać duże modele językowe do analizy i przetwarzania danych.
+- **Architektura wieloagentowa**: System powinien być zbudowany w oparciu o architekturę wieloagentową, aby efektywnie rozdzielać zadania.
+
+#### 4. Wymagania dotyczące interesariuszy
+
+- **Służby zdrowia**: System musi spełniać potrzeby instytucji medycznych i badaczy.
+- **Użytkownicy końcowi**: System powinien być łatwy w użyciu dla pacjentów i lekarzy.
+
+### GAIA - schematy ról
+TODO
