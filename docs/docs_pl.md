@@ -370,3 +370,8 @@ Hackathon jest otwarty do 24 listopada. Informacje o hackathonie są dostępne p
 
 
 ---
+
+
+### Schemat BPMN
+
+![aasd_e2_bpmn](/docs/figures/aasd_e2_bpmn.drawio.png)
