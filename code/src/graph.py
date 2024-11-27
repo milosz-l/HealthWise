@@ -26,7 +26,6 @@ class MedicalGraph:
 
         graph.add_conditional_edges("chatbot_agent", self._request_answered, {True: END, False: "knowledge_agent"})
         graph.add_edge("knowledge_agent", "chatbot_agent")
-        graph.add_edge("chatbot_agent", END)
 
         graph.set_entry_point("chatbot_agent")
 
