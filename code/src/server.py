@@ -30,8 +30,9 @@ async def redirect_root_to_docs():
 async def ask(user_request):
     initial_state = {
         "user_request": user_request,
-        "refrased_request": "",
-        "knowledge": "",
+        "rephrased_request": "",
+        "source_knowledge_pairs": [],
+        "aggregated_knowledge": "",
         "answer": ""
     }
     response = await graph.ainvoke(input=initial_state)

@@ -4,10 +4,16 @@ from langchain_core.output_parsers import StrOutputParser
 
 
 class KnowledgeChain:
-    KNOWLEDGE_PROMPT_TEMPLATE = """You are knowledgebase. Provide general medical information about the following symptoms or conditions, referencing professional medical literature.
-        User request: {refrased_request}
+    def __init__(self, source):
+        KNOWLEDGE_PROMPT_TEMPLATE = "You are a knowledgebase. Provide general medical information about the following symptoms or conditions, referencing professional medical literature specifically from " + source + """.
+        User request: {rephrased_request}
         Medical information:"""
-
-    def create(self):
         llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
-        return { "knowledge": PromptTemplate.from_template(self.KNOWLEDGE_PROMPT_TEMPLATE) | llm | StrOutputParser() }
+
+        self.source = source
+        self.chain = PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE) | llm | StrOutputParser()
+
+
+    def invoke(self, state):
+        return {"source_knowledge_pairs": [(self.source, self.chain.invoke(state))]}
+
