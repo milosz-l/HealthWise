@@ -49,6 +49,7 @@ with st.sidebar:
 
             if location["latitude"] and location["longitude"]:
                 st.session_state["location"] = location
+                # TODO: st.rerun(scope="fragment")
                 st.write("Are you sure?")
             
         else:
@@ -82,6 +83,7 @@ if prompt := st.chat_input():
         msg = response.json()[0]["generated_text"]
         st.session_state.messages.append({"role": "medical assistant", "content": msg})
         st.chat_message("assistant").write(msg)
+        # TODO: requests.post("/", json={"user_request": prompt})
     else:
         st.error("Something went wrong with the API request. Please check your API key and try again.")
     
