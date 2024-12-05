@@ -77,7 +77,7 @@ with st.sidebar:
     main_df = df[(df["DATE"].dt.date >= start_date) & (df["DATE"].dt.date <= end_date)][["DISEASE_ID", "DATE", "LAT", "LON", "COLOR"]]
     
 if not main_df.empty:
-    ids = ["All"] + unique_diseases
+    ids = ["All", "Aggregated"] + unique_diseases
     disease_id = st.sidebar.selectbox("Choose disease ID", ids, key="disease_id")
     st.write("Reported Infection Cases:")
     count_sick = 0
@@ -104,6 +104,28 @@ if not main_df.empty:
                 st.write("Predicting the Disease Spread Rate:")
                 st.pyplot(fig2)
 
+    elif disease_id == "Aggregated":
+        count_sick = main_df["DISEASE_ID"].count()
+        
+        if count_sick == 0:
+            st.map(DEFAULT, color="#00000000", zoom=8)
+        
+        else:
+            st.map(main_df, color="COLOR", zoom=9)
+
+            if start_date != end_date:
+                for color_idx, id  in enumerate(unique_diseases):
+                    count_per_date = main_df[main_df['DISEASE_ID'] == id].groupby("DATE")["DISEASE_ID"].count()
+                    ax1.hist(count_per_date.index, bins=len(count_per_date), weights=count_per_date, edgecolor='black', alpha=0.5)
+                    
+                    count_per_date = main_df[main_df['DISEASE_ID'] == id].groupby("DATE")["DISEASE_ID"].count()
+                    cumulative_count = count_per_date.cumsum()
+                    ax2.plot(cumulative_count.index, cumulative_count, marker='o', linestyle='-', label="Cumulative Number of Infections")
+
+                st.write("Analysis of New Cases:")
+                st.pyplot(fig1)
+                st.write("Predicting the Disease Spread Rate:")
+                st.pyplot(fig2)
     else:
         count_sick = count_disease_by_id(main_df, "DISEASE_ID", disease_id)
 
