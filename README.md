@@ -3,6 +3,7 @@
 ## Requirements
 
 - Poetry
+- filled `.env` file (copy `.env.example`, rename it, and fill in the missing API keys)
 
 ## Install dependencies
 
