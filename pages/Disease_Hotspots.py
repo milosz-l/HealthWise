@@ -31,15 +31,16 @@ st.set_page_config(
     page_icon="💬"
 )
 
+DATASET = "Hotspots.csv"
 DAYS_TO_PREDICT = 14
 LAT_CENTER = 20.7967
 LON_CENTER = -156.3319
 DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
 
-df = pd.read_csv("Test.csv", sep=";", header=None, names=["USER_ID", "DISEASE_ID", "DATE", "LAT", "LON"])
+df = pd.read_csv(DATASET, sep=";", header=None, names=["USER_ID", "DISEASE_ID", "DATE", "LAT", "LON"])
 df["USER_ID"] = df["USER_ID"].astype("string")
 df["DISEASE_ID"] = df["DISEASE_ID"].astype("int")
-df["DATE"] = pd.to_datetime(df["DATE"], format="%d.%m.%Y")
+df["DATE"] = pd.to_datetime(df["DATE"], format="%d.%m.%Y", errors='coerce')
 df["LAT"] = df["LAT"].astype("float")
 df["LON"] = df["LON"].astype("float")
 
