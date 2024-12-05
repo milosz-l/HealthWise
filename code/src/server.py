@@ -33,9 +33,10 @@ async def ask(user_request):
         "rephrased_request": "",
         "source_knowledge_pairs": [],
         "aggregated_knowledge": "",
-        "answer": ""
+        "answer": "",
+        # TODO: conversation_id from frontend?
     }
-    response = await graph.ainvoke(input=initial_state)
+    response = await graph.ainvoke(input=initial_state) # TODO: add streaming
     return response
 
 if __name__ == "__main__":
