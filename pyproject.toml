@@ -13,6 +13,10 @@ langgraph = "^0.2.56"
 fastapi = "^0.115.6"
 uvicorn = "^0.32.1"
 python-dotenv = "^1.0.1"
+streamlit = "^1.40.2"
+streamlit-geolocation = "^0.0.10"
+matplotlib = "^3.9.3"
+scikit-learn = "^1.5.2"
 
 
 [build-system]
