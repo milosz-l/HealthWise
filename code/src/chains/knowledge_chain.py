@@ -12,7 +12,7 @@ Medical information:"""
         llm = ChatPerplexity(model="llama-3.1-sonar-small-128k-online", pplx_api_key=os.getenv("PERPLEXITYAI_API_KEY"))
 
         self.source = source
-        self.chain = PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE) | llm #| StrOutputParser()
+        self.chain = PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE) | llm #| StrOutputParser() # TODO: change output parser so that citations are shown
 
 
     def invoke(self, state):
