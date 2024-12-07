@@ -79,7 +79,7 @@ with st.sidebar:
 if not main_df.empty:
     ids = ["All"] + unique_diseases
     disease_id = st.sidebar.selectbox("Choose disease ID", ids, key="disease_id")
-    st.write("Reported Infection Cases:")
+    st.write("### Reported Infection Cases:")
     count_sick = 0
 
     if disease_id == "All":
@@ -99,7 +99,7 @@ if not main_df.empty:
 
                 ax2.legend()
 
-                st.write("Predicting the Disease Spread Rate:")
+                st.write("### Predicting the Disease Spread Rate:")
                 st.pyplot(fig2)
     
     else:
@@ -117,13 +117,13 @@ if not main_df.empty:
                 cumulative_count = count_per_date.cumsum()
 
                 ax1.hist(count_per_date.index, bins=len(count_per_date), weights=count_per_date, color=colors[color_idx], edgecolor='black')
-                st.write("Analysis of New Cases:")
+                st.write("### Analysis of New Cases:")
                 st.pyplot(fig1)
                  
                 ax2.plot(cumulative_count.index, cumulative_count, color=colors[color_idx], marker='o', linestyle='-', label="Cumulative Number of Infections")
                 predict_data(cumulative_count)
 
-                st.write("Predicting the Disease Spread Rate:")
+                st.write("### Predicting the Disease Spread Rate:")
                 st.pyplot(fig2)
                 
     col1, col2, col3 = st.columns(3)
@@ -140,3 +140,6 @@ if not main_df.empty:
             infected_percentage = (count_sick / unique_users) * 100 if unique_users > 0 else 0
             st.metric("Percentage Infected", value=f"{round(infected_percentage, 2)}%")
         
+    if disease_id != "All":
+        st.write("### Detailed Data for Disease", str(disease_id))
+        st.dataframe(main_df[main_df["DISEASE_ID"] == disease_id])
