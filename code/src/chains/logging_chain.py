@@ -35,7 +35,7 @@ class LoggingChain:
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
             """
-Summarize the following conversation into a maximum of 10 bullet points, focusing on the medical aspects:
+Summarize the user's symptoms into one sentence:
 
 Conversation:
 {conversation_history}
