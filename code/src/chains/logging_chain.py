@@ -77,10 +77,6 @@ Categories for given summary:
             {
                 "conversation_id": state["conversation_id"],
                 "conversation": state["conversation_history"],
-            }
-        )
-        self.db.save_extracted_info(
-            {
                 "conversation_id": state["conversation_id"],
                 "location": state["location"],
                 "datetime": state["datetime"],
@@ -88,4 +84,3 @@ Categories for given summary:
                 "symptoms_categories": state["symptoms_categories"],
             }
         )
-        return state

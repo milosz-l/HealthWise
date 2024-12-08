@@ -12,7 +12,6 @@ class Database:
 
         # Access collections within the database
         self.conversations_collection = self.db["conversations"]
-        self.extracted_info_collection = self.db["extracted_info"]
 
     def save_conversation(self, conversation_data):
         try:
@@ -25,10 +24,3 @@ class Database:
         return self.conversations_collection.find_one(
             {"conversation_id": conversation_id}
         )
-
-    def save_extracted_info(self, extracted_info_data):
-        try:
-            self.extracted_info_collection.insert_one(extracted_info_data)
-        except Exception as e:
-            print(f"An error occurred while saving the extracted info: {e}")
-            # raise e
