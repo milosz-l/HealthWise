@@ -1,8 +1,8 @@
 from langchain_community.chat_models import ChatPerplexity
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import BaseOutputParser, StrOutputParser
-import os, json
+from langchain_core.output_parsers import StrOutputParser
+import os
 
 
 class KnowledgeChain:
@@ -19,24 +19,15 @@ class KnowledgeChain:
         KNOWLEDGE_PROMPT_TEMPLATE = (
             "You are a knowledgebase. Provide general medical information about the following symptoms or conditions, referencing professional medical literature specifically from "
             + self.source
-            + """.
+            + ". Include every used citation at the end of the response, formatted as below:\n\n"
+            + "[1] Title of link1 (https://link1.com)\n"
+            + "[2] Title of link2 (https://link2.com)\n"
+            + """etc.
 User request: {rephrased_request}
 Medical information:"""
         )
 
-        self.chain = PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE) | llm
+        self.chain = PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE) | llm | StrOutputParser()
 
     def invoke(self, state):
         return {"source_knowledge_pairs": [(self.source, self.chain.invoke(state))]}
-
-
-class PerplexityOutputParser(BaseOutputParser[str]):
-
-    def parse(self, json_str):
-        data = json.loads(json_str)
-        content = data.get("content", "")
-        citations = data.get("citations", [])
-        formatted_content = content + "\n\n"
-        for index, citation in enumerate(citations, start=1):
-            formatted_content += f"[{index}] {citation}\n"
-        return formatted_content

@@ -4,7 +4,12 @@ from langchain_openai import ChatOpenAI
 
 
 class AggregationChain:
-    AGGREGATION_PROMPT_TEMPLATE = """You are a knowledge aggregator. Aggregate the medical knowledge retrieved from different sources to create an article summarizing all of them, providing the most important information from each source.
+    AGGREGATION_PROMPT_TEMPLATE = """"You are a knowledge aggregator. Aggregate the medical knowledge retrieved from different sources to create an article summarizing all of them, providing the most important information from each source. "Reference the provided sources, attaching used citations from knowledge at the end in below format:
+\n
+[1] Title of link1 (https://link1.com)
+[2] Title of link2 (https://link2.com)
+...etc.
+
 Medical information with sources:
 <MEDICAL_KNOWLEDGE>
 {formatted_source_knowledge_pairs}
