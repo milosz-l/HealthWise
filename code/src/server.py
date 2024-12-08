@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from graph import MedicalGraph
@@ -22,9 +23,11 @@ app.add_middleware(
 
 graph = MedicalGraph().create()
 
+
 @app.get("/")
 async def redirect_root_to_docs():
     return RedirectResponse("/docs")
+
 
 @app.post("/")
 async def ask(user_request):
@@ -35,7 +38,6 @@ async def ask(user_request):
             "source_knowledge_pairs": [],
             "aggregated_knowledge": "",
             "answer": "",
-            # TODO: conversation_id from frontend?
         }
         for chunk in graph.stream(initial_state):
             for node_name, node_results in chunk.items():
@@ -46,6 +48,19 @@ async def ask(user_request):
                     yield message
 
     return StreamingResponse(event_stream(user_request), media_type="text/event-stream")
+
+
+@app.post("/debug")
+async def debug_ask(user_request: str):
+    initial_state = {
+        "user_request": user_request,
+        "rephrased_request": "",
+        "source_knowledge_pairs": [],
+        "aggregated_knowledge": "",
+        "answer": "",
+    }
+    return graph.invoke(initial_state)
+
 
 if __name__ == "__main__":
     uvicorn.run(app)
