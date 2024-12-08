@@ -1,5 +1,5 @@
 from chains.chatbot_chain import ChatbotChain
-from chains.knowledge_chain import KnowledgeChain
+from chains.knowledge_chain import KnowledgeChain, KnowledgeChainKGRAG
 from chains.aggregation_chain import AggregationChain
 
 from langgraph.graph import END, StateGraph
@@ -27,6 +27,7 @@ class MedicalGraph:
         graph.add_node("chatbot_agent", ChatbotChain().create())
         graph.add_node("knowledge_agent_wikipedia", KnowledgeChain("https://www.wikipedia.org/").invoke)
         graph.add_node("knowledge_agent_nhs", KnowledgeChain("https://www.nhs.uk/conditions/").invoke)
+        graph.add_node("knowledge_agent_kg_rag", KnowledgeChainKGRAG().invoke)
         graph.add_node("aggregation_agent", AggregationChain().create())
 
         graph.add_conditional_edges("chatbot_agent", self._request_answered_routing)

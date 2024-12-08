@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from langchain_community.chat_models import ChatPerplexity
+from langchain_community.chat_models import ChatPerplexity, ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from kg_rag.utility import system_prompts, config_data, load_chroma, load_sentence_transformer, get_prompt, retrieve_context
@@ -38,7 +38,7 @@ class KnowledgeChainKGRAG(KnowledgeChain):
         self.vectorstore = load_chroma(self.VECTOR_DB_PATH, self.SENTENCE_EMBEDDING_MODEL_FOR_NODE_RETRIEVAL)
         self.embedding_function_for_context_retrieval = load_sentence_transformer(self.SENTENCE_EMBEDDING_MODEL_FOR_CONTEXT_RETRIEVAL)
         self.node_context_df = pd.read_csv(self.NODE_CONTEXT_PATH)
-        self.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
+        self.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0, api_key=os.getenv("PERPLEXITYAI_API_KEY"))
         template = get_prompt(self.INSTRUCTION, self.SYSTEM_PROMPT)
 
         self.source = source
