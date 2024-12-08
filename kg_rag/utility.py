@@ -270,19 +270,7 @@ def disease_entity_extractor_v2(text, llm_type='gpt', llm=None):
         prompt = PromptTemplate(template=template, input_variables=["sentence"])
         # llm = llama_model(config_data["LLAMA_MODEL_NAME"], config_data["LLAMA_MODEL_BRANCH"], config_data["LLM_CACHE_DIR"], stream=False, method='method-1') 
         llm_chain = LLMChain(prompt=prompt, llm=llm)
-        print('Running LLaMa disease extraction')
         resp = llm_chain.run(sentence=text)
-        print('Consulting SPOKE graph')
-
-        print_vram_info()
-        # import gc
-        # del llm
-        # gc.collect()
-        # torch.cuda.empty_cache()
-        # from numba import cuda
-        # device = cuda.get_current_device()
-        # device.reset() 
-        print_vram_info()
     try:
         entity_dict = json.loads(resp)
         return entity_dict["Diseases"]
