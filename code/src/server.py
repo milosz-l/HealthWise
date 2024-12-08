@@ -59,7 +59,8 @@ async def ask(user_request, location: str):
 
 
 @app.post("/debug")
-async def debug_ask(user_request: str):
+async def debug_ask(user_request: str, location: str):
+    conversation_id = str(uuid.uuid4())  # TODO: move it to frontend
     initial_state = {
         "user_request": user_request,
         "rephrased_request": "",
