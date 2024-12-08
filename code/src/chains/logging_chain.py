@@ -57,11 +57,19 @@ class LoggingChain:
             - Reproductive Symptoms
             - ENT (Ear/Nose/Throat) Symptoms
             - Ophthalmological Symptoms
+            - None
 
-            Summary:
+            Example response:
+            General Symptoms, Neurological Symptoms
+
+
+
+            Now, provide the categories for the following summary.
+
+            Summary of conversation:
             {summary}
 
-            Categories:
+            Categories for given summary:
             """
         )
         chain = prompt_template | self.llm | StrOutputParser()
