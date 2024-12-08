@@ -35,7 +35,7 @@ class LoggingChain:
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
             """
-Summarize the user's symptoms into one sentence:
+Summarize the user's symptoms from the following conversation into one sentence. The summary should be in English.
 
 Conversation:
 {conversation_history}
