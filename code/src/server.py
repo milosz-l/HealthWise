@@ -33,7 +33,7 @@ async def redirect_root_to_docs():
 @app.post("/")
 async def ask(user_request, location: str):
     def event_stream(user_request: str, location: str):
-        conversation_id = str(uuid.uuid4())
+        conversation_id = str(uuid.uuid4())  # TODO: move it to frontend
         initial_state = {
             "user_request": user_request,
             "rephrased_request": "",
