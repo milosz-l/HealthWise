@@ -19,17 +19,18 @@ Message to translate: It seems your request does not relate to a medical conditi
 User request: {user_request}"""
 
     def create(self):
-        llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
+        answer_llm = ChatOpenAI(model_name="gpt-4o", temperature=0.7)
+        rephrase_llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
         return RunnableBranch(
             (
                 lambda x: x["aggregated_knowledge"] != "",
                 {
                     "answer": PromptTemplate.from_template(self.ANSWER_PROMPT_TEMPLATE)
-                    | llm
+                    | answer_llm
                     | StrOutputParser()
                 },
             ),
-            lambda x: self._rephrase_request(x, llm),
+            lambda x: self._rephrase_request(x, rephrase_llm),
         )
 
     def _rephrase_request(self, state, llm):
