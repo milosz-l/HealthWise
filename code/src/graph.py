@@ -17,7 +17,7 @@ class MedicalState(TypedDict):
 
 
 class MedicalGraph:
-    knowledge_agents = ["knowledge_agent_wikipedia", "knowledge_agent_nhs"]
+    knowledge_agents = ["knowledge_agent_nhs", "knowledge_agent_medlineplus", "knowledge_agent_cdc"]
 
     def _request_answered_routing(self, state: MedicalState):
         if state["answer"] == "":
@@ -32,12 +32,16 @@ class MedicalGraph:
         graph.add_node("aggregation_agent", AggregationChain().create())
         if os.getenv("PERPLEXITYAI_API_KEY"):
             graph.add_node(
-                "knowledge_agent_wikipedia",
-                KnowledgeChain("https://www.wikipedia.org/").invoke,
+                "knowledge_agent_medlineplus",
+                KnowledgeChain("https://medlineplus.gov/encyclopedia.html").invoke,
             )
             graph.add_node(
                 "knowledge_agent_nhs",
                 KnowledgeChain("https://www.nhs.uk/conditions/").invoke,
+            )
+            graph.add_node(
+                "knowledge_agent_cdc",
+                KnowledgeChain("https://www.cdc.gov/health-topics.html").invoke,
             )
         else:
             self.knowledge_agents = ["knowledge_agent_openai"]
