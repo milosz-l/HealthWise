@@ -13,11 +13,14 @@ Aggregated medical information:"""
 
     def create(self):
         llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
-        return {"aggregated_knowledge":
-                {"formatted_source_knowledge_pairs": self._format_source_knowledge_pairs}
-                | PromptTemplate.from_template(self.AGGREGATION_PROMPT_TEMPLATE)
-                | llm
-                | StrOutputParser()}
+        return {
+            "aggregated_knowledge": {
+                "formatted_source_knowledge_pairs": self._format_source_knowledge_pairs
+            }
+            | PromptTemplate.from_template(self.AGGREGATION_PROMPT_TEMPLATE)
+            | llm
+            | StrOutputParser()
+        }
 
     def _format_source_knowledge_pairs(self, state):
         formatted_entries = []
