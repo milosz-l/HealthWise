@@ -43,7 +43,7 @@ class MedicalGraph:
         graph.add_node("aggregation_agent", AggregationChain().create())
         graph.add_node("logging_agent", LoggingChain().create())
         graph.add_node("update_conversation_history", self._update_conversation_history)
-        if os.getenv("PERPLEXITYAI_API_KEY"):
+        if os.getenv("TAVILY_API_KEY"):
             graph.add_node(
                 "knowledge_agent_medlineplus",
                 KnowledgeChain("https://medlineplus.gov").invoke,

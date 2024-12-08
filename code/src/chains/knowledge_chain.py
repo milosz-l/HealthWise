@@ -13,32 +13,22 @@ class KnowledgeChain:
 
         if source is not None:
             self.source = source
-            # llm = ChatPerplexity(
-            #     model="llama-3.1-sonar-large-128k-online",
-            #     pplx_api_key=os.getenv("PERPLEXITYAI_API_KEY"),
-            #     temperature=0.0,
-            #     model_kwargs={"search_domain_filter": self.source},
-            #     # search_domain_filter=self.source,  # Pass as a keyword argument
-            # )
             llm = TavilySearchAPIRetriever(
-                # k=5,
+                k=7,
                 include_generated_answer=True,
                 include_domains=[self.source],
-                # search_depth="advanced",
+                search_depth="advanced",
             )
 
-        KNOWLEDGE_PROMPT_TEMPLATE = (
-            f"You are a knowledgebase. Provide general medical information about the following symptoms or conditions, "
-            f"referencing professional medical literature specifically from {self.source}. "
-            "Include every used citation at the end of the response, formatted as below:\n\n"
-            "[1] Title of link1 (https://link1.com)\n"
-            "[2] Title of link2 (https://link2.com)\n"
-            """etc.
-User request: {rephrased_request}
-Medical information:"""
-        )
+        self.chain = llm | self._format_tavily_response
 
-        self.chain = llm
+    def _format_tavily_response(self, retrieved_documents):
+        formatted_response = []
+        for index, document in enumerate(retrieved_documents):
+            content = document.page_content
+            source = document.metadata["source"]
+            formatted_response.append(f"{content}\n[{index + 1}] {source}\n")
+        return "\n".join(formatted_response)
 
     def invoke(self, state):
         return {

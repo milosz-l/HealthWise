@@ -9,7 +9,6 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import uuid
-from typing import List
 
 app = FastAPI()
 
@@ -28,7 +27,6 @@ graph = MedicalGraph().create()
 @app.get("/")
 async def redirect_root_to_docs():
     return RedirectResponse("/docs")
-
 
 @app.post("/")
 async def ask(user_request, location: str):
