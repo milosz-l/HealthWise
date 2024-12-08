@@ -9,10 +9,6 @@ def clear_chat_history():
     st.session_state.messages = [SESSION_STATE]
 
 
-def reset_location():
-    st.session_state["location"] = None
-    
-
 st.set_page_config(
     page_title="HealthWise - Chatbot",
     page_icon="💬"
@@ -25,11 +21,6 @@ SHARE_LOCATION = False
 LLAMA = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
 GPT2 = "https://api-inference.huggingface.co/models/openai-community/gpt2"
 API_URL = ""
-
-location = {}
-
-if "location" not in st.session_state:
-    st.session_state["location"] = None
 
 with st.sidebar:
     selected_model = st.selectbox("Choose a model", ["Llama-3-8B", "GPT2"], key="selected_model")
@@ -44,16 +35,9 @@ with st.sidebar:
         API_URL = GPT2[:]
     
     with st.expander("Share location"):
-        if not st.session_state["location"]:
-            location = streamlit_geolocation()
-
-            if location["latitude"] and location["longitude"]:
-                st.session_state["location"] = location
-                st.write("Are you sure?")
-            
-        else:
-            location = st.session_state["location"]
-            st.button('Reset', on_click=reset_location)
+        location = streamlit_geolocation()
+        
+        if location["latitude"] and location["longitude"]:
             cords = pd.DataFrame({"LAT": [location["latitude"]], "LON": [location["longitude"]]})
             st.map(cords, zoom=10)
         
@@ -82,6 +66,7 @@ if prompt := st.chat_input():
         msg = response.json()[0]["generated_text"]
         st.session_state.messages.append({"role": "medical assistant", "content": msg})
         st.chat_message("assistant").write(msg)
+        # TODO: requests.post("/", json={"user_request": prompt})
     else:
         st.error("Something went wrong with the API request. Please check your API key and try again.")
     

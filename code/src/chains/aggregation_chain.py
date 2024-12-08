@@ -1,19 +1,18 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_community.chat_models import ChatPerplexity
-import os
+from langchain_openai import ChatOpenAI
 
 
 class AggregationChain:
     AGGREGATION_PROMPT_TEMPLATE = """You are a knowledge aggregator. Aggregate the medical knowledge retrieved from different sources to create an article summarizing all of them, providing the most important information from each source.
-        Medical information with sources:
-        <MEDICAL_KNOWLEDGE>
-        {formatted_source_knowledge_pairs}
-        </MEDICAL_KNOWLEDGE>
-        Aggregated medical information:"""
+Medical information with sources:
+<MEDICAL_KNOWLEDGE>
+{formatted_source_knowledge_pairs}
+</MEDICAL_KNOWLEDGE>
+Aggregated medical information:"""
 
     def create(self):
-        llm = ChatPerplexity(model="gpt-4o-mini", pplx_api_key=os.getenv("PERPLEXITYAI_API_KEY"))
+        llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
         return {"aggregated_knowledge":
                 {"formatted_source_knowledge_pairs": self._format_source_knowledge_pairs}
                 | PromptTemplate.from_template(self.AGGREGATION_PROMPT_TEMPLATE)

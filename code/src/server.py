@@ -4,7 +4,7 @@ load_dotenv()
 from graph import MedicalGraph
 
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -28,15 +28,24 @@ async def redirect_root_to_docs():
 
 @app.post("/")
 async def ask(user_request):
-    initial_state = {
-        "user_request": user_request,
-        "rephrased_request": "",
-        "source_knowledge_pairs": [],
-        "aggregated_knowledge": "",
-        "answer": ""
-    }
-    response = await graph.ainvoke(input=initial_state)
-    return response
+    def event_stream(user_request: str):
+        initial_state = {
+            "user_request": user_request,
+            "rephrased_request": "",
+            "source_knowledge_pairs": [],
+            "aggregated_knowledge": "",
+            "answer": "",
+            # TODO: conversation_id from frontend?
+        }
+        for chunk in graph.stream(initial_state):
+            for node_name, node_results in chunk.items():
+                if node_name != "chatbot_agent":
+                    continue
+                chunk_answer = node_results.get("answer", [])
+                for message in chunk_answer:
+                    yield message
+
+    return StreamingResponse(event_stream(user_request), media_type="text/event-stream")
 
 if __name__ == "__main__":
     uvicorn.run(app)
