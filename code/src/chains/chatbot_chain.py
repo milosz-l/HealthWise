@@ -27,7 +27,7 @@ Translated message:
 """
 
     def create(self):
-        answer_llm = ChatOpenAI(model_name="gpt-4o", temperature=0.7)
+        answer_llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
         rephrase_llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
         return RunnableBranch(
             (
