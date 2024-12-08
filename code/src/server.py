@@ -58,5 +58,23 @@ async def ask(user_request, location: str):
     )
 
 
+@app.post("/debug")
+async def debug_ask(user_request: str):
+    initial_state = {
+        "user_request": user_request,
+        "rephrased_request": "",
+        "source_knowledge_pairs": [],
+        "aggregated_knowledge": "",
+        "answer": "",
+        "conversation_id": conversation_id,
+        "location": location,
+        "conversation_history": [{"user": user_request}],
+        "summary": "",
+        "symptoms_categories": [],
+        "datetime": "",
+    }
+    return graph.invoke(initial_state)
+
+
 if __name__ == "__main__":
     uvicorn.run(app)
