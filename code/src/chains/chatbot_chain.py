@@ -21,15 +21,33 @@ User request: {user_request}"""
     def create(self):
         llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
         return RunnableBranch(
-            (lambda x: x["aggregated_knowledge"] != "", {"answer": PromptTemplate.from_template(self.ANSWER_PROMPT_TEMPLATE) | llm | StrOutputParser()}),
-            lambda x: self._rephrase_request(x, llm)
+            (
+                lambda x: x["aggregated_knowledge"] != "",
+                {
+                    "answer": PromptTemplate.from_template(self.ANSWER_PROMPT_TEMPLATE)
+                    | llm
+                    | StrOutputParser()
+                },
+            ),
+            lambda x: self._rephrase_request(x, llm),
         )
 
-    def _rephrase_request(self, x, llm):
-        rephrased_request = (PromptTemplate.from_template(self.REPHRASE_PROMPT_TEMPLATE) | llm | StrOutputParser()).invoke(x)
+    def _rephrase_request(self, state, llm):
+        rephrased_request = (
+            PromptTemplate.from_template(self.REPHRASE_PROMPT_TEMPLATE)
+            | llm
+            | StrOutputParser()
+        ).invoke(state)
 
         if rephrased_request == "UNRELATED":
-            return {"answer": (PromptTemplate.from_template(self.TRANSLATE_UNRELATED_PROMPT_TEMPLATE) | llm | StrOutputParser()).invoke(x)}
+            return {
+                "answer": (
+                    PromptTemplate.from_template(
+                        self.TRANSLATE_UNRELATED_PROMPT_TEMPLATE
+                    )
+                    | llm
+                    | StrOutputParser()
+                ).invoke(state)
+            }
         else:
             return {"rephrased_request": rephrased_request}
-
