@@ -12,14 +12,22 @@ class LoggingChain:
         self.db = Database()
 
     def create(self):
-        return (
+        # first, summarize conversation
+        summarization_chain = RunnablePassthrough.assign(
+            summary=self._summarize_conversation
+        )
+        # then, classify symptoms based on the summary
+        classification_chain = RunnablePassthrough.assign(
+            symptoms_categories=self._classify_symptoms
+        )
+        # finally, save the data
+        saving_chain = (
             RunnablePassthrough.assign(
                 datetime=self._get_current_datetime,
-                summary=self._summarize_conversation,
-                symptoms_categories=self._classify_symptoms,
             )
             | self._save_data
         )
+        return summarization_chain | classification_chain | saving_chain
 
     def _get_current_datetime(self, state):
         return datetime.now().isoformat()
