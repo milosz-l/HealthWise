@@ -10,7 +10,6 @@ class KnowledgeChain:
     def __init__(self, source=None):
         self.source = "OpenAI"
         llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
-
         if source is not None:
             self.source = source
             llm = TavilySearchAPIRetriever(
@@ -19,7 +18,6 @@ class KnowledgeChain:
                 include_domains=[self.source],
                 search_depth="advanced",
             )
-
         self.chain = llm | self._format_tavily_response
 
     def _format_tavily_response(self, retrieved_documents):
