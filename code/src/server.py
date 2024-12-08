@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import uuid
-
+from typing import List
 
 app = FastAPI()
 
@@ -31,9 +31,7 @@ async def redirect_root_to_docs():
 
 
 @app.post("/")
-async def ask(
-    user_request, location: str
-):  # Assuming location is passed in the request body
+async def ask(user_request, location: str):
     def event_stream(user_request: str, location: str):
         conversation_id = str(uuid.uuid4())
         initial_state = {
@@ -54,6 +52,8 @@ async def ask(
                 if node_name == "chatbot_agent":
                     chunk_answer = node_results.get("answer", [])
                     for message in chunk_answer:
+                        # Update conversation history with chatbot response
+                        initial_state["conversation_history"].append({"bot": message})
                         yield message
                 elif node_name == "logging_agent":
                     # Handle logging_agent output if needed
