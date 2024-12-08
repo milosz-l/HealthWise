@@ -11,6 +11,15 @@
 poetry install
 ```
 
+In case you get this error:
+```
+... pip install tavily-python
+```
+then run:
+```bash
+pip install --upgrade tavily-python
+```
+
 ## Run the app
 
 ```bash
@@ -25,3 +34,6 @@ For now it's only black formatter.
 ```bash
 pre-commit run --all-files
 ```
+
+#### TODO
+pip install --upgrade tavily-python

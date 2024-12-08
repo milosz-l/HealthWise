@@ -46,15 +46,15 @@ class MedicalGraph:
         if os.getenv("PERPLEXITYAI_API_KEY"):
             graph.add_node(
                 "knowledge_agent_medlineplus",
-                KnowledgeChain("https://medlineplus.gov/encyclopedia.html").invoke,
+                KnowledgeChain("https://medlineplus.gov").invoke,
             )
             graph.add_node(
                 "knowledge_agent_nhs",
-                KnowledgeChain("https://www.nhs.uk/conditions/").invoke,
+                KnowledgeChain("https://www.nhs.uk").invoke,
             )
             graph.add_node(
                 "knowledge_agent_cdc",
-                KnowledgeChain("https://www.cdc.gov/health-topics.html").invoke,
+                KnowledgeChain("https://www.cdc.gov").invoke,
             )
         else:
             self.knowledge_agents = ["knowledge_agent_openai"]
