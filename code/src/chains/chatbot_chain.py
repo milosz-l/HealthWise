@@ -9,7 +9,7 @@ class ChatbotChain:
 User request: {user_request}
 Rephrased request or UNRELATED:"""
 
-    ANSWER_PROMPT_TEMPLATE = """You are a medical assistant. Your task is to take the user's medical request and provide the user suggestions in original request language, utilizing knowledge retrieved from medical sources, referencing sources if possible.
+    ANSWER_PROMPT_TEMPLATE = """You are a medical assistant. Your task is to take the user's medical request and provide the user suggestions in original request language that the user request was written in, utilizing knowledge retrieved from medical sources, referencing sources if possible.
 User request: {user_request}
 Retrieved medical knowledge: {aggregated_knowledge}
 Answer with suggestions:"""

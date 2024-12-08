@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from graph import MedicalGraph
@@ -7,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import uuid
 
 
 app = FastAPI()
@@ -22,30 +24,45 @@ app.add_middleware(
 
 graph = MedicalGraph().create()
 
+
 @app.get("/")
 async def redirect_root_to_docs():
     return RedirectResponse("/docs")
 
+
 @app.post("/")
-async def ask(user_request):
-    def event_stream(user_request: str):
+async def ask(
+    user_request, location: str
+):  # Assuming location is passed in the request body
+    def event_stream(user_request: str, location: str):
+        conversation_id = str(uuid.uuid4())
         initial_state = {
             "user_request": user_request,
             "rephrased_request": "",
             "source_knowledge_pairs": [],
             "aggregated_knowledge": "",
             "answer": "",
-            # TODO: conversation_id from frontend?
+            "conversation_id": conversation_id,
+            "location": location,
+            "conversation_history": [{"user": user_request}],
+            "summary": "",
+            "symptoms_categories": [],
+            "datetime": "",
         }
         for chunk in graph.stream(initial_state):
             for node_name, node_results in chunk.items():
-                if node_name != "chatbot_agent":
-                    continue
-                chunk_answer = node_results.get("answer", [])
-                for message in chunk_answer:
-                    yield message
+                if node_name == "chatbot_agent":
+                    chunk_answer = node_results.get("answer", [])
+                    for message in chunk_answer:
+                        yield message
+                elif node_name == "logging_agent":
+                    # Handle logging_agent output if needed
+                    pass
 
-    return StreamingResponse(event_stream(user_request), media_type="text/event-stream")
+    return StreamingResponse(
+        event_stream(user_request, location), media_type="text/event-stream"
+    )
+
 
 if __name__ == "__main__":
     uvicorn.run(app)

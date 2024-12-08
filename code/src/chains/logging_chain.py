@@ -1,0 +1,88 @@
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from datetime import datetime
+from database import Database
+
+
+class LoggingChain:
+    def __init__(self):
+        self.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
+        self.db = Database()
+
+    def create(self):
+        return (
+            RunnablePassthrough.assign(
+                datetime=self._get_current_datetime,
+                summary=self._summarize_conversation,
+                symptoms_categories=self._classify_symptoms,
+            )
+            | self._save_data
+        )
+
+    def _get_current_datetime(self, state):
+        return datetime.now().isoformat()
+
+    def _summarize_conversation(self, state):
+        prompt_template = PromptTemplate.from_template(
+            """
+            Summarize the following conversation into a maximum of 10 bullet points, focusing on the medical aspects:
+
+            Conversation:
+            {conversation_history}
+
+            Summary:
+            """
+        )
+        chain = prompt_template | self.llm | StrOutputParser()
+        return chain.invoke({"conversation_history": state["conversation_history"]})
+
+    def _classify_symptoms(self, state):
+        prompt_template = PromptTemplate.from_template(
+            """
+            Classify the following medical summary into one or more of the following categories. Return the applicable categories as a comma-separated list:
+
+            Categories:
+            - General Symptoms
+            - Respiratory Symptoms
+            - Cardiovascular Symptoms
+            - Gastrointestinal Symptoms
+            - Neurological Symptoms
+            - Musculoskeletal Symptoms
+            - Dermatological Symptoms
+            - Psychological Symptoms
+            - Endocrine Symptoms
+            - Urinary Symptoms
+            - Reproductive Symptoms
+            - ENT (Ear/Nose/Throat) Symptoms
+            - Ophthalmological Symptoms
+
+            Summary:
+            {summary}
+
+            Categories:
+            """
+        )
+        chain = prompt_template | self.llm | StrOutputParser()
+        response = chain.invoke({"summary": state["summary"]})
+        categories = [category.strip() for category in response.split(",")]
+        return categories
+
+    def _save_data(self, state):
+        self.db.save_conversation(
+            {
+                "conversation_id": state["conversation_id"],
+                "conversation": state["conversation_history"],
+            }
+        )
+        self.db.save_extracted_info(
+            {
+                "conversation_id": state["conversation_id"],
+                "location": state["location"],
+                "datetime": state["datetime"],
+                "summary": state["summary"],
+                "symptoms_categories": state["symptoms_categories"],
+            }
+        )
+        return state
