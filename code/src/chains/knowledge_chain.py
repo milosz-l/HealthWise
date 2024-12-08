@@ -11,7 +11,8 @@ class KnowledgeChain:
             + source
             + """.
 User request: {rephrased_request}
-Medical information:"""
+Medical information:
+"""
         )
         llm = ChatPerplexity(
             model="llama-3.1-sonar-small-128k-online",

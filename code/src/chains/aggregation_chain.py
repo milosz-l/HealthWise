@@ -4,12 +4,15 @@ from langchain_openai import ChatOpenAI
 
 
 class AggregationChain:
-    AGGREGATION_PROMPT_TEMPLATE = """You are a knowledge aggregator. Aggregate the medical knowledge retrieved from different sources to create an article summarizing all of them, providing the most important information from each source.
+    AGGREGATION_PROMPT_TEMPLATE = """
+You are a knowledge aggregator. Aggregate the medical knowledge retrieved from different sources to create an article summarizing all of them, providing the most important information from each source.
 Medical information with sources:
 <MEDICAL_KNOWLEDGE>
 {formatted_source_knowledge_pairs}
 </MEDICAL_KNOWLEDGE>
-Aggregated medical information:"""
+
+Aggregated medical information:
+"""
 
     def create(self):
         llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)

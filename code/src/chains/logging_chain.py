@@ -27,13 +27,13 @@ class LoggingChain:
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
             """
-            Summarize the following conversation into a maximum of 10 bullet points, focusing on the medical aspects:
+Summarize the following conversation into a maximum of 10 bullet points, focusing on the medical aspects:
 
-            Conversation:
-            {conversation_history}
+Conversation:
+{conversation_history}
 
-            Summary:
-            """
+Summary:
+"""
         )
         chain = prompt_template | self.llm | StrOutputParser()
         return chain.invoke({"conversation_history": state["conversation_history"]})
@@ -41,36 +41,23 @@ class LoggingChain:
     def _classify_symptoms(self, state):
         prompt_template = PromptTemplate.from_template(
             """
-            Classify the following medical summary into one or more of the following categories. Return the applicable categories as a comma-separated list:
+Classify the following medical summary into one or more of the following categories. Return the applicable categories as a comma-separated list:
 
-            Categories:
-            - General Symptoms
-            - Respiratory Symptoms
-            - Cardiovascular Symptoms
-            - Gastrointestinal Symptoms
-            - Neurological Symptoms
-            - Musculoskeletal Symptoms
-            - Dermatological Symptoms
-            - Psychological Symptoms
-            - Endocrine Symptoms
-            - Urinary Symptoms
-            - Reproductive Symptoms
-            - ENT (Ear/Nose/Throat) Symptoms
-            - Ophthalmological Symptoms
-            - None
+List of categories:
+General Symptoms, Respiratory Symptoms, Cardiovascular Symptoms, Gastrointestinal Symptoms, Neurological Symptoms, Musculoskeletal Symptoms, Dermatological Symptoms, Psychological Symptoms, Endocrine Symptoms, Urinary Symptoms, Reproductive Symptoms, ENT (Ear/Nose/Throat) Symptoms, Ophthalmological Symptoms, None
 
-            Example response:
-            General Symptoms, Neurological Symptoms
+Example response:
+General Symptoms, Neurological Symptoms
 
 
 
-            Now, provide the categories for the following summary.
+Now, provide the categories for the following summary.
 
-            Summary of conversation:
-            {summary}
+Summary of conversation:
+{summary}
 
-            Categories for given summary:
-            """
+Categories for given summary:
+"""
         )
         chain = prompt_template | self.llm | StrOutputParser()
         response = chain.invoke({"summary": state["summary"]})
