@@ -9,10 +9,13 @@ class ChatbotChain:
 User request: {user_request}
 Rephrased request or UNRELATED:"""
 
-    ANSWER_PROMPT_TEMPLATE = """You are a medical assistant. Your task is to address the user's medical request by providing suggestions in the original request language, using knowledge retrieved from medical sources. As you craft your response, carefully integrate and organize the retrieved knowledge to ensure a logical flow. When referencing these sources, insert links in markdown format and maintain strict sequential numbering based on the order they are introduced in your response. Before finalizing, review your response to confirm all links are present and the numbering is correct with no numbers skipped.
-User request: {user_request}
-Retrieved medical knowledge: {aggregated_knowledge}
-Answer with suggestions:"""
+    ANSWER_PROMPT_TEMPLATE = """You are a medical assistant. Your task is to address the user's medical request by providing suggestions using the language in which the user's request is written, utilizing knowledge retrieved from medical sources. As you craft your response, carefully integrate and organize the retrieved knowledge to ensure a logical flow. When referencing these sources, insert links in markdown format and maintain strict sequential numbering based on the order they are introduced in your response. Before finalizing, review your response to confirm all links are present and the numbering is correct with no numbers skipped.
+Retrieved medical knowledge:
+<RETRIVED_MEDICAL_KNOWLEDGE>
+{aggregated_knowledge}
+</RETRIVED_MEDICAL_KNOWLEDGE>
+User request (written in the language to be used for the answer): {user_request}
+Answer with suggestions (if the user request is in English answer in English):"""
 
     TRANSLATE_UNRELATED_PROMPT_TEMPLATE = """You are a translator. Translate the message below using the language in which the user's request is written.
 Message to translate: It seems your request does not relate to a medical condition. Please try again with a focus on symptoms or diseases.

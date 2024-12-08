@@ -27,7 +27,11 @@ User request: {rephrased_request}
 Medical information:"""
         )
 
-        self.chain = PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE) | llm | StrOutputParser()
+        self.chain = (
+            PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE)
+            | llm
+            | StrOutputParser()
+        )
 
     def invoke(self, state):
         return {"source_knowledge_pairs": [(self.source, self.chain.invoke(state))]}

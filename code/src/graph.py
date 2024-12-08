@@ -17,7 +17,11 @@ class MedicalState(TypedDict):
 
 
 class MedicalGraph:
-    knowledge_agents = ["knowledge_agent_nhs", "knowledge_agent_medlineplus", "knowledge_agent_cdc"]
+    knowledge_agents = [
+        "knowledge_agent_nhs",
+        "knowledge_agent_medlineplus",
+        "knowledge_agent_cdc",
+    ]
 
     def _request_answered_routing(self, state: MedicalState):
         if state["answer"] == "":
