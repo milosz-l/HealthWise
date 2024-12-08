@@ -7,11 +7,11 @@ import os
 
 class KnowledgeChain:
     def __init__(self, source=None):
-        llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
+        llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
         self.source = "OpenAI"
         if source != None:
             llm = ChatPerplexity(
-                model="llama-3.1-sonar-small-128k-online",
+                model="llama-3.1-sonar-large-128k-online",
                 pplx_api_key=os.getenv("PERPLEXITYAI_API_KEY"),
             )
             self.source = source
