@@ -17,3 +17,11 @@ poetry install
 poetry shell
 python code/src/server.py
 ```
+
+## Run pre-commit hooks
+
+For now it's only black formatter.
+
+```bash
+pre-commit run --all-files
+```
