@@ -52,8 +52,6 @@ async def ask(user_request, location: str):
                 if node_name == "chatbot_agent":
                     chunk_answer = node_results.get("answer", [])
                     for message in chunk_answer:
-                        # Update conversation history with chatbot response
-                        initial_state["answer"] += message
                         yield message
                 elif node_name == "logging_agent":
                     # Handle logging_agent output if needed
