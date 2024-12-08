@@ -1,4 +1,5 @@
 from langchain_community.chat_models import ChatPerplexity
+from langchain_community.retrievers import TavilySearchAPIRetriever
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -7,31 +8,31 @@ import os
 
 class KnowledgeChain:
     def __init__(self, source=None):
-        llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
         self.source = "OpenAI"
-        if source != None:
-            llm = ChatPerplexity(
-                model="llama-3.1-sonar-large-128k-online",
-                pplx_api_key=os.getenv("PERPLEXITYAI_API_KEY"),
-            )
+        llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
+
+        if source is not None:
             self.source = source
+            llm = TavilySearchAPIRetriever(
+                k=7,
+                include_generated_answer=True,
+                include_domains=[self.source],
+                search_depth="advanced",
+            )
 
-        KNOWLEDGE_PROMPT_TEMPLATE = (
-            "You are a knowledgebase. Provide general medical information about the following symptoms or conditions, referencing professional medical literature specifically from "
-            + self.source
-            + ". Include every used citation at the end of the response, formatted as below:\n\n"
-            + "[1] Title of link1 (https://link1.com)\n"
-            + "[2] Title of link2 (https://link2.com)\n"
-            + """etc.
-User request: {rephrased_request}
-Medical information:"""
-        )
+        self.chain = llm | self._format_tavily_response
 
-        self.chain = (
-            PromptTemplate.from_template(KNOWLEDGE_PROMPT_TEMPLATE)
-            | llm
-            | StrOutputParser()
-        )
+    def _format_tavily_response(self, retrieved_documents):
+        formatted_response = []
+        for index, document in enumerate(retrieved_documents):
+            content = document.page_content
+            source = document.metadata["source"]
+            formatted_response.append(f"{content}\n[{index + 1}] {source}\n")
+        return "\n".join(formatted_response)
 
     def invoke(self, state):
-        return {"source_knowledge_pairs": [(self.source, self.chain.invoke(state))]}
+        return {
+            "source_knowledge_pairs": [
+                (self.source, self.chain.invoke(state["rephrased_request"]))
+            ]
+        }

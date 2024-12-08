@@ -10,7 +10,7 @@ You are a medical assistant helper. Your task is to take the user's medical requ
 User request: {user_request}
 """
 
-    ANSWER_PROMPT_TEMPLATE = """You are a medical assistant. Your task is to address the user's medical request by providing suggestions using the language in which the user's request is written, utilizing knowledge retrieved from medical sources. As you craft your response, carefully integrate and organize the retrieved knowledge to ensure a logical flow. When referencing these sources, insert links in markdown format and assign your own sequential numbering based on the order they are introduced in your response. Before finalizing, review your response to ensure all links are present and the numbering is correct, with no numbers skipped.
+    ANSWER_PROMPT_TEMPLATE = """You are a medical assistant. Your task is to address the user's medical request by providing suggestions using the language in which the user's request is written, utilizing knowledge retrieved from medical sources. As you craft your response, carefully integrate and organize the retrieved knowledge to ensure a logical flow. When referencing these sources, insert links in markdown format and assign your own sequential numbering ([1], [2], [3], ...) based on the order they are introduced in your response. Before finalizing, review your response to ensure all links are present and the numbering is correct, with no numbers skipped. If tavily.com is returned as a knowledge link, do not cite it; instead, use another source.
 Retrieved medical knowledge:
 <RETRIVED_MEDICAL_KNOWLEDGE>
 {aggregated_knowledge}
