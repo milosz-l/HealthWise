@@ -18,6 +18,7 @@ streamlit-geolocation = "^0.0.10"
 matplotlib = "^3.9.3"
 scikit-learn = "^1.5.2"
 pymongo = "^4.10.1"
+tavily-python = "^0.5.0"
 
 
 [tool.poetry.group.dev.dependencies]
