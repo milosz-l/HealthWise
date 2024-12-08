@@ -53,10 +53,13 @@ async def ask(user_request, location: str):
                     chunk_answer = node_results.get("answer", [])
                     for message in chunk_answer:
                         # Update conversation history with chatbot response
-                        initial_state["conversation_history"].append({"bot": message})
+                        initial_state["answer"] += message
                         yield message
                 elif node_name == "logging_agent":
                     # Handle logging_agent output if needed
+                    pass
+                elif node_name == "update_conversation_history":
+                    # Handle update_conversation_history output if needed
                     pass
 
     return StreamingResponse(

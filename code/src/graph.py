@@ -27,7 +27,7 @@ class MedicalGraph:
         if state["answer"] == "":
             return ["knowledge_agent_wikipedia", "knowledge_agent_nhs"]
         else:
-            return "logging_agent"
+            return "update_conversation_history"
 
     def create(self):
         graph = StateGraph(MedicalState)
@@ -43,14 +43,20 @@ class MedicalGraph:
         )
         graph.add_node("aggregation_agent", AggregationChain().create())
         graph.add_node("logging_agent", LoggingChain().create())
+        graph.add_node("update_conversation_history", self._update_conversation_history)
 
         graph.add_conditional_edges("chatbot_agent", self._request_answered_routing)
         graph.add_edge(
             ["knowledge_agent_wikipedia", "knowledge_agent_nhs"], "aggregation_agent"
         )
         graph.add_edge("aggregation_agent", "chatbot_agent")
+        graph.add_edge("update_conversation_history", "logging_agent")
         graph.add_edge("logging_agent", END)
 
         graph.set_entry_point("chatbot_agent")
 
         return graph.compile()
+
+    def _update_conversation_history(self, state: MedicalState):
+        state["conversation_history"].append({"bot": state["answer"]})
+        return state
