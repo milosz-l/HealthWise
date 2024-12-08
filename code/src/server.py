@@ -50,15 +50,8 @@ async def ask(user_request, location: str):
         for chunk in graph.stream(initial_state):
             for node_name, node_results in chunk.items():
                 if node_name == "chatbot_agent":
-                    chunk_answer = node_results.get("answer", [])
-                    for message in chunk_answer:
-                        yield message
-                elif node_name == "logging_agent":
-                    # Handle logging_agent output if needed
-                    pass
-                elif node_name == "update_conversation_history":
-                    # Handle update_conversation_history output if needed
-                    pass
+                    chunk_answer = node_results.get("answer", "")
+                    yield chunk_answer
 
     return StreamingResponse(
         event_stream(user_request, location), media_type="text/event-stream"
