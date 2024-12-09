@@ -7,9 +7,9 @@ from graph import MedicalGraph
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel  # Import BaseModel for request body
+from pydantic import BaseModel
 import uvicorn
-from typing import List, Optional
+from typing import Optional
 
 app = FastAPI()
 

@@ -3,7 +3,7 @@
 ## Requirements
 
 - Poetry
-- filled `.env` file (copy `.env.example`, rename it, and fill in the missing API keys)
+- Filled `.env` file (copy `.env.example`, rename it, and fill in the missing API keys)
 
 ## Install dependencies
 
@@ -11,9 +11,9 @@
 poetry install
 ```
 
-In case you get this error:
+If you encounter the error `ImportError: cannot import name 'TavilyClient' from 'tavily'`, run the following command:
 ```
-... pip install tavily-python
+pip install tavily-python
 ```
 then run:
 ```bash
@@ -22,9 +22,15 @@ pip install --upgrade tavily-python
 
 ## Run the app
 
+### Start the backend server
 ```bash
 poetry shell
-python code/src/server.py
+python backend/server.py
+```
+
+### Start the frontend app
+```bash
+streamlit run HealthWise.py
 ```
 
 ## Run pre-commit hooks
