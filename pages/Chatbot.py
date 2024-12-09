@@ -3,70 +3,78 @@ import pandas as pd
 import streamlit as st
 
 from streamlit_geolocation import streamlit_geolocation
+import uuid  # Import uuid to generate conversation_id
 
 
 def clear_chat_history():
     st.session_state.messages = [SESSION_STATE]
+    # Generate a new conversation_id when chat history is cleared
+    st.session_state.conversation_id = str(uuid.uuid4())
 
 
-st.set_page_config(
-    page_title="HealthWise - Chatbot",
-    page_icon="💬"
-)
+st.set_page_config(page_title="HealthWise - Chatbot", page_icon="💬")
 
 SESSION_STATE = {"role": "medical assistant", "content": "How can I help you?"}
 USER_INFO = {"latitude": "LAT", "longitude": "LON"}
 SHARE_LOCATION = False
 
-LLAMA = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
-GPT2 = "https://api-inference.huggingface.co/models/openai-community/gpt2"
-API_URL = ""
+BACKEND_URL = "http://localhost:8000"  # Update with your backend URL
 
 with st.sidebar:
-    selected_model = st.selectbox("Choose a model", ["Llama-3-8B", "GPT2"], key="selected_model")
-
-    with st.expander("API Key Configuration"):
-        api_key = st.text_input("Hugging Face API Key", key="huggingface_api_key", type="password")
-        st.markdown("[Get your Hugging Face API key here](https://huggingface.co/settings/tokens)", unsafe_allow_html=True) 
-
-    if selected_model == "Llama-3-8B":
-        API_URL = LLAMA[:]
-    elif selected_model == "GPT2":
-        API_URL = GPT2[:]
-    
     with st.expander("Share location"):
         location = streamlit_geolocation()
-        
+
         if location["latitude"] and location["longitude"]:
-            cords = pd.DataFrame({"LAT": [location["latitude"]], "LON": [location["longitude"]]})
+            cords = pd.DataFrame(
+                {"LAT": [location["latitude"]], "LON": [location["longitude"]]}
+            )
             st.map(cords, zoom=10)
-        
+        else:
+            location = {"latitude": None, "longitude": None}
+
 st.title("💬 HealthWise Chatbot")
 st.caption("Your medical assistant, ready to help!")
-st.button('Clear Chat History', on_click=clear_chat_history)
+# st.button("Clear Chat History", on_click=clear_chat_history)
 
+# Initialize session state variables
 if "messages" not in st.session_state:
     st.session_state["messages"] = [SESSION_STATE]
+
+if "conversation_id" not in st.session_state:
+    st.session_state["conversation_id"] = str(uuid.uuid4())
 
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
-    if not api_key:
-        st.info("Please add your Hugging Face API key to continue.")
-        st.stop()
-
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
-    headers = {"Authorization": f"Bearer {api_key}"}
-    response = requests.post(API_URL, headers=headers, json={"inputs": prompt})
-    
-    if response.status_code == 200:
-        msg = response.json()[0]["generated_text"]
+    # Send the user prompt to the backend
+    payload = {
+        "user_request": prompt,
+        "location": (
+            f"{location['latitude']},{location['longitude']}"
+            if location["latitude"]
+            else ""
+        ),
+        "conversation_id": st.session_state["conversation_id"],
+    }
+
+    try:
+        response = requests.post(f"{BACKEND_URL}/", json=payload, stream=True)
+        response.raise_for_status()
+
+        # Read the streaming response from the backend
+        msg = ""
+        for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+            if chunk:
+                msg += chunk
+                # Optionally, you can update the message in real-time
+                # st.session_state.messages.append({"role": "medical assistant", "content": msg})
+                # st.chat_message("assistant").write(msg)
+        # Once the full message is received, append it to the chat
         st.session_state.messages.append({"role": "medical assistant", "content": msg})
         st.chat_message("assistant").write(msg)
-        # TODO: requests.post("/", json={"user_request": prompt})
-    else:
-        st.error("Something went wrong with the API request. Please check your API key and try again.")
-    
+    except requests.exceptions.RequestException as e:
+        st.error(f"An error occurred: {e}")
