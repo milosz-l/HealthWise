@@ -22,9 +22,15 @@ pip install --upgrade tavily-python
 
 ## Run the app
 
+### Start the backend server
 ```bash
 poetry shell
 python backend/server.py
+```
+
+### Start the frontend app
+```bash
+streamlit run HealthWise.py
 ```
 
 ## Run pre-commit hooks
