@@ -1,6 +1,32 @@
-# Installation
+# HealthWise
 
-## Requirements
+**Multi-agent healthcare system: trusted health assistant for people, outbreak detector for health authorities.**
+
+Main features:
+- Multi-agent system (*LangGraph*, *LangChain*)
+- Chatbot **responses** are **grounded ONLY on reliable sources**: 
+    - nhs.uk
+    - medlineplus.gov
+    - cdc.gov
+- Outbreak detector for health authorities - **analysis panel for health authorities** with visualisations and forecasting
+
+## Tech stack
+- **Backend**: Python, FastAPI, LangGraph, LangChain
+- **Frontend**: Streamlit
+- **LLM**: OpenAI (gpt-4o and gpt-4o-mini)
+- **Search engine**: Tavily
+- **Visualisation**: Plotly
+- **Virtual environment**: Matplotlib
+- **Data storage**: MongoDB
+
+## Security considerations
+- The app is seperated into two parts: chatbot for people and analysis panel for health authorities.
+    - Chatbot is public and can be used by anyone. **It can ONLY WRITE to the database, not read from it.**
+    - Analysis panel is supposed to be accessed only by health authorities. **It can ONLY READ from the database.**
+
+## Installation
+
+### Requirements
 
 - Poetry
 - Filled `.env` file (copy `.env.example`, rename it, and fill in the missing API keys)
