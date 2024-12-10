@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from graph import MedicalGraph
+from .graph import MedicalGraph
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse

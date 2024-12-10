@@ -3,7 +3,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from datetime import datetime
-from database import Database
+from ..database import Database
 
 
 class LoggingChain:

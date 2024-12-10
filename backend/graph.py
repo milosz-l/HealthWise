@@ -1,7 +1,7 @@
-from chains.chatbot_chain import ChatbotChain
-from chains.knowledge_chain import KnowledgeChain
-from chains.aggregation_chain import AggregationChain
-from chains.logging_chain import LoggingChain
+from .chains.chatbot_chain import ChatbotChain
+from .chains.knowledge_chain import KnowledgeChain
+from .chains.aggregation_chain import AggregationChain
+from .chains.logging_chain import LoggingChain
 
 from langgraph.graph import END, StateGraph
 from typing import Annotated, TypedDict, List
