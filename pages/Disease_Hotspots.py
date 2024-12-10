@@ -7,6 +7,11 @@ from sklearn.linear_model import Lasso
 from matplotlib.ticker import MaxNLocator
 
 
+@st.cache_data
+def load_data():
+    return pd.read_csv(DATASET, sep=";", header=None, names=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"])
+    
+
 def count_disease_by_id(df, id_column, target_id):
     return df[id_column].eq(target_id).sum()
 
@@ -37,7 +42,7 @@ LAT_CENTER = 20.7967
 LON_CENTER = -156.3319
 DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
 
-df = pd.read_csv(DATASET, sep=";", header=None, names=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"])
+df = load_data()
 df["USER_ID"] = df["USER_ID"].astype("string")
 df["DISEASE"] = df["DISEASE"].astype("string")
 df["DATE"] = pd.to_datetime(df["DATE"], format="%d.%m.%Y", errors='coerce')
@@ -49,11 +54,11 @@ min_date = df["DATE"].min().date()
 max_date = df["DATE"].max().date()
 unique_diseases = list(df["DISEASE"].unique())
 num_unique_diseases = len(unique_diseases) 
-colors = plt.get_cmap("viridis", min(num_unique_diseases, 256))
 
 if num_unique_diseases > 256:
-    colors += colors[:num_unique_diseases - len(colors)]
+    raise ValueError(f"The number of unique diseases ({num_unique_diseases}) exceeds the maximum number of colors available (256).")
 
+colors = plt.get_cmap("viridis", num_unique_diseases)
 colors = [rgba_to_hex(colors(i)) for i in range(num_unique_diseases)]
 
 df["COLOR"] = df["DISEASE"].map(dict(zip(unique_diseases, colors)))
