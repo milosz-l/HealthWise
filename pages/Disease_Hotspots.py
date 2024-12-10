@@ -37,18 +37,24 @@ LAT_CENTER = 20.7967
 LON_CENTER = -156.3319
 DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
 
-df = pd.read_csv(DATASET, sep=";", header=None, names=["USER_ID", "DISEASE", "DATE", "LAT", "LON"])
+df = pd.read_csv(DATASET, sep=";", header=None, names=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"])
 df["USER_ID"] = df["USER_ID"].astype("string")
 df["DISEASE"] = df["DISEASE"].astype("string")
 df["DATE"] = pd.to_datetime(df["DATE"], format="%d.%m.%Y", errors='coerce')
 df["LAT"] = df["LAT"].astype("float")
 df["LON"] = df["LON"].astype("float")
+df["SUMMARY"] = df["SUMMARY"].astype("string")
 
 min_date = df["DATE"].min().date()
 max_date = df["DATE"].max().date()
 unique_diseases = list(df["DISEASE"].unique())
-colors = plt.get_cmap("viridis", min(len(unique_diseases), 256))
-colors = [rgba_to_hex(colors(i)) for i in range(len(unique_diseases))]
+num_unique_diseases = len(unique_diseases) 
+colors = plt.get_cmap("viridis", min(num_unique_diseases, 256))
+
+if num_unique_diseases > 256:
+    colors += colors[:num_unique_diseases - len(colors)]
+
+colors = [rgba_to_hex(colors(i)) for i in range(num_unique_diseases)]
 
 df["COLOR"] = df["DISEASE"].map(dict(zip(unique_diseases, colors)))
 
@@ -77,7 +83,7 @@ model = Lasso()
 with st.sidebar:
     start_date = st.date_input(label="Start date", min_value=min_date, max_value=max_date)
     end_date = st.date_input(label="End date", min_value=start_date, max_value=max_date)
-    main_df = df[(df["DATE"].dt.date >= start_date) & (df["DATE"].dt.date <= end_date)][["DISEASE", "DATE", "LAT", "LON", "COLOR"]]
+    main_df = df[(df["DATE"].dt.date >= start_date) & (df["DATE"].dt.date <= end_date)][["DISEASE", "DATE", "LAT", "LON", "SUMMARY", "COLOR"]]
     
 if not main_df.empty:
     ids = ["All"] + unique_diseases
@@ -152,4 +158,4 @@ if not main_df.empty:
 
     if disease_id != "All":
         st.write("### Detailed Data for", disease_id)
-        st.dataframe(main_df[main_df["DISEASE"] == disease_id])
+        st.dataframe(main_df[main_df["DISEASE"] == disease_id][["DATE", "LAT", "LON", "SUMMARY"]])
