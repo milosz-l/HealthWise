@@ -4,6 +4,7 @@ import streamlit as st
 from streamlit_geolocation import streamlit_geolocation
 import uuid
 import os
+import json
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -36,7 +37,7 @@ def authenticate_chatbot():
 st.set_page_config(page_title="HealthWise - Chatbot", page_icon="💬")
 
 if authenticate_chatbot():
-    SESSION_STATE = {"role": "medical assistant", "content": "How can I help you?"}
+    SESSION_STATE = {"bot": "How can I help you?"}
     USER_INFO = {"latitude": "LAT", "longitude": "LON"}
     SHARE_LOCATION = False
 
@@ -64,14 +65,16 @@ if authenticate_chatbot():
         st.session_state["conversation_id"] = str(uuid.uuid4())
 
     for msg in st.session_state.messages:
-        st.chat_message(msg["role"]).write(msg["content"])
+        for role, content in msg.items():
+            if role == "bot":
+                role = "assistant"
+            st.chat_message(role).write(content)
 
     if prompt := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append({"user": prompt})
         st.chat_message("user").write(prompt)
-
         payload = {
-            "user_request": prompt,
+            "conversation_history": st.session_state.messages,
             "location": (
                 f"{location['latitude']},{location['longitude']}"
                 if location["latitude"]
@@ -84,14 +87,26 @@ if authenticate_chatbot():
             response = requests.post(f"{BACKEND_URL}/", json=payload, stream=True)
             response.raise_for_status()
 
-            msg = ""
-            for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
-                if chunk:
-                    msg += chunk
+            with st.chat_message("assistant"):
+                response_placeholder = st.empty()
+                response_text = ""
+                for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+                    if chunk:
+                        chunk_key, chunk_content = list(json.loads(chunk).items())[0]
+                        if chunk_key == "processing_state" and chunk_content:
+                            response_placeholder.write(chunk_content)
+                        elif chunk_content == "":
+                            pass
+                        elif chunk_key == "answer":
+                            response_text += chunk_content
+                            response_placeholder.write(response_text)
+                        elif chunk_key == "final_answer":
+                            response_text += chunk_content
+                            response_placeholder.write(response_text)
+
             st.session_state.messages.append(
-                {"role": "medical assistant", "content": msg}
+                {"bot": response_text}
             )
-            st.chat_message("assistant").write(msg)
         except requests.exceptions.RequestException as e:
             st.error(f"An error occurred: {e}")
 else:

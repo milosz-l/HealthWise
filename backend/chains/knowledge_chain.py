@@ -25,9 +25,13 @@ class KnowledgeChain:
         return "\n".join(formatted_response)
 
     def invoke(self, state):
+        try:
+            retrieved_knowledge = self.chain.invoke(state["rephrased_request"])
+        except:  # TODO: fix tavily error
+            pass
         return {
             "source_knowledge_pairs": [
-                (self.source, self.chain.invoke(state["rephrased_request"]))
+                (self.source, retrieved_knowledge)
             ],
             "processing_state": [f"Retrieved medical information from [{self.source}]({self.source}). Aggregating knowledge..."]
         }
