@@ -22,6 +22,7 @@ class MedicalState(TypedDict):
     summary: str
     symptoms_categories: List[str]
     datetime: str
+    processing_state: Annotated[List[str], add]
 
 
 class MedicalGraph:

@@ -52,6 +52,7 @@ async def ask(user_request: UserRequest):
             "summary": "",
             "symptoms_categories": [],
             "datetime": "",
+            "processing_state": []
         }
         for stream_chunk in graph.stream(initial_state, stream_mode=["updates", "messages"]):
             if stream_chunk[0] == "messages":  # Stream the follow-up question, final answer or "unrelated" message
@@ -63,8 +64,13 @@ async def ask(user_request: UserRequest):
                     yield json.dumps({"final_answer": chunk_answer})
                 elif node_name == "validation_agent" and metadata.get("ls_temperature") == 0.1:
                     yield json.dumps({"answer": chunk_answer})
-            elif stream_chunk[0] == "updates":  # TODO Return processing state
-                pass
+            elif stream_chunk[0] == "updates":  # Stream the processing state
+                for _, attributes in stream_chunk[1].items():
+                    processing_state = attributes.get('processing_state', [])
+                    if processing_state:
+                        yield json.dumps({"processing_state": processing_state[0]})
+                    else:
+                        yield json.dumps({"processing_state": None})
 
     return StreamingResponse(event_stream(user_request), media_type="text/event-stream")
 
@@ -83,6 +89,7 @@ async def debug_ask(user_request: UserRequest):
         "summary": "",
         "symptoms_categories": [],
         "datetime": "",
+        "processing_state": []
     }
     return graph.invoke(initial_state)
 

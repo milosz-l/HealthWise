@@ -70,7 +70,10 @@ Answer with suggestions (if the previous conversation is in English answer in En
             | llm
             | StrOutputParser()
         ).invoke(state)
-        return {"rephrased_request": rephrased_request}
+        return {
+            "rephrased_request": rephrased_request,
+            "processing_state": ["Retrieving medical information from knowledge sources..."]
+        }
 
     def _format_conversation_history(self, state):
         formatted_history = []

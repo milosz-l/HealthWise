@@ -72,7 +72,7 @@ Translated message:
             ),
             (
                 lambda x: x["message_to_translate"] == "COMPLETE",
-                {"followup_question": RunnableLambda(lambda x: "")},
+                {"processing_state": RunnableLambda(lambda x: ["Analyzing user's medical query..."])},
             ),
             {
                 "followup_question": PromptTemplate.from_template(self.TRANSLATE_PROMPT_TEMPLATE)

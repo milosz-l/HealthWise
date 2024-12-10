@@ -28,5 +28,6 @@ class KnowledgeChain:
         return {
             "source_knowledge_pairs": [
                 (self.source, self.chain.invoke(state["rephrased_request"]))
-            ]
+            ],
+            "processing_state": [f"Retrieved medical information from [{self.source}]({self.source}). Aggregating knowledge..."]
         }
