@@ -1,9 +1,5 @@
-from langchain_community.chat_models import ChatPerplexity
 from langchain_community.retrievers import TavilySearchAPIRetriever
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-import os
 
 
 class KnowledgeChain:
