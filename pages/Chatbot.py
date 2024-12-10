@@ -40,7 +40,7 @@ if authenticate_chatbot():
     USER_INFO = {"latitude": "LAT", "longitude": "LON"}
     SHARE_LOCATION = False
 
-    BACKEND_URL = "http://localhost:8000"
+    BACKEND_URL = "http://backend:8000"
 
     with st.sidebar:
         with st.expander("Share location"):

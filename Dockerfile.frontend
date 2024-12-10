@@ -1,0 +1,25 @@
+# Use an official Python runtime as the base image
+FROM python:3.12-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# # Copy only necessary files
+# COPY pyproject.toml poetry.lock* /app/
+# COPY HealthWise.py /app/
+# COPY pages /app/pages
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install poetry
+RUN pip install poetry
+
+# Install the dependencies using poetry
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
+
+# Expose the port that Streamlit will run on
+EXPOSE 8501
+
+# Define the command to run your application
+CMD ["streamlit", "run", "HealthWise.py", "--server.port", "8501", "--server.address", "0.0.0.0"]

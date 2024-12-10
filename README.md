@@ -70,3 +70,15 @@ For now it's only black formatter.
 ```bash
 pre-commit run --all-files
 ```
+
+## Deployment
+
+### Testing Docker
+
+#### Build and run Docker containers
+
+You can start both containers with docker compose with:
+
+```bash
+docker-compose up --build
+```
