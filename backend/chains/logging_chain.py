@@ -55,7 +55,7 @@ List of categories:
 General Symptoms, Respiratory Symptoms, Cardiovascular Symptoms, Gastrointestinal Symptoms, Neurological Symptoms, Musculoskeletal Symptoms, Dermatological Symptoms, Psychological Symptoms, Endocrine Symptoms, Urinary Symptoms, Reproductive Symptoms, ENT (Ear/Nose/Throat) Symptoms, Ophthalmological Symptoms, None
 
 Example response:
-General Symptoms, Neurological Symptoms
+Neurological Symptoms, General Symptoms
 
 
 

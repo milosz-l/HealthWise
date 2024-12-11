@@ -14,13 +14,8 @@ Analyze the latest user request in the context of the conversation history to de
 
 Instructions:
 - Return "UNRELATED" if the topic is not related to a medical condition.
-- If essential information is missing, generate a follow-up question that asks for all required details without incorporating your own thoughts or considerations.
+- If essential information is missing, generate a follow-up question that asks for all required details without incorporating your own thoughts or considerations, written in the language in which the previous conversation is written.
 - Return "COMPLETE" if all required details are provided.
-
-Conversation History with latest user request:
-<CONVERSATION_HISTORY>
-{conversation_history}
-</CONVERSATION_HISTORY>
 
 List of Required Information:
 - Body Temperature
@@ -31,15 +26,20 @@ List of Required Information:
 Example follow-up question requesting any missing Required Information, given that the user mentioned in conversation he is experiencing headaches and have taken ibuprofen:
 I'm sorry you're experiencing headaches. Could you please provide more details, such as your current body temperature, the duration of your symptoms, and whether you have any known allergies?
 
-Follow-up question text, or UNRELATED, or COMPLETE:
+Conversation History with latest user request:
+<CONVERSATION_HISTORY>
+{conversation_history}
+</CONVERSATION_HISTORY>
+
+Follow-up question text (if previous conversation language is English, question must be in English), or UNRELATED, or COMPLETE:
 """
 
     TRANSLATE_PROMPT_TEMPLATE = """
 You are a translator. Translate the message below using the language in which the user's request is written.
 Message to translate: {message_to_translate}
-Latest user request: {user_request}
+Latest user request (written in language to use for translation): {user_request}
 
-Translated message:
+Translated message (if message to translate is in English, return it as it is):
 """
 
     def create(self):
