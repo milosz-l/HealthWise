@@ -105,6 +105,8 @@ if authenticate_chatbot():
                     if chunk:
                         chunk_key, chunk_content = list(json.loads(chunk).items())[0]
                         if chunk_key == "processing_state" and chunk_content:
+                            if chunk_content == "FINISH":
+                                break
                             response_placeholder.write(chunk_content)
                         elif chunk_content == "":
                             pass

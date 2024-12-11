@@ -57,7 +57,8 @@ Answer with suggestions (if the previous conversation is in English answer in En
                     }
                     | PromptTemplate.from_template(self.ANSWER_PROMPT_TEMPLATE)
                     | answer_llm
-                    | StrOutputParser()
+                    | StrOutputParser(),
+                    "processing_state": RunnableLambda(lambda x: ["FINISH"])
                 },
             ),
             lambda x: self._rephrase_request(x, rephrase_llm),
