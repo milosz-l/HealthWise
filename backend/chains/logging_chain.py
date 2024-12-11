@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from datetime import datetime
+from datetime import datetime, timedelta
 from database import Database
 
 
@@ -30,7 +30,7 @@ class LoggingChain:
         return summarization_chain | classification_chain | saving_chain
 
     def _get_current_datetime(self, state):
-        return datetime.now().isoformat()
+        return (datetime.now() - timedelta(days=2)).isoformat()
 
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
@@ -49,13 +49,13 @@ Summary:
     def _classify_symptoms(self, state):
         prompt_template = PromptTemplate.from_template(
             """
-Classify the following medical summary into one or more of the following categories. Return the applicable categories as a comma-separated list:
+Classify the following medical summary into one or more of the following categories. The first category should be the most relevant one. Return the applicable categories as a comma-separated list:
 
 List of categories:
-General Symptoms, Respiratory Symptoms, Cardiovascular Symptoms, Gastrointestinal Symptoms, Neurological Symptoms, Musculoskeletal Symptoms, Dermatological Symptoms, Psychological Symptoms, Endocrine Symptoms, Urinary Symptoms, Reproductive Symptoms, ENT (Ear/Nose/Throat) Symptoms, Ophthalmological Symptoms, None
+Respiratory Symptoms, Gastrointestinal Symptoms, Neurological Symptoms, Musculoskeletal Symptoms, Dermatological Symptoms, Psychological Symptoms, Endocrine Symptoms, Urinary Symptoms, Reproductive Symptoms, ENT (Ear/Nose/Throat) Symptoms, Ophthalmological Symptoms, None
 
 Example response:
-Neurological Symptoms, General Symptoms
+Neurological Symptoms, Cardiovascular Symptoms
 
 
 

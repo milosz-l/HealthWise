@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import os
+from pymongo import MongoClient
 
 from sklearn.linear_model import Lasso
 from matplotlib.ticker import MaxNLocator
@@ -33,20 +34,32 @@ def authenticate_hotspots():
 st.set_page_config(page_title="HealthWise - Hotspots", page_icon="📈")
 
 if authenticate_hotspots():
-    DATASET = "Hotspots.csv"
     DAYS_TO_PREDICT = 14
     LAT_CENTER = 20.7967
     LON_CENTER = -156.3319
     DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
 
-    @st.cache_data
     def load_data():
-        return pd.read_csv(
-            DATASET,
-            sep=";",
-            header=None,
-            names=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"],
-        )
+        mongodb_uri = os.getenv('MONGODB_URI')
+        mongodb_database = os.getenv('MONGODB_DATABASE')
+        client = MongoClient(mongodb_uri)
+        db = client[mongodb_database]
+        collection = db['conversations']
+        records = collection.find()
+        data = []
+        for record in records:
+            user_id = record['conversation_id']
+            if record['location'] != "":
+                location = record['location'].split(",")
+                lat, lon = location[0], location[1]
+            else:
+                lat, lon = None, None
+            datetime = record['datetime']
+            summary = record['summary']
+            disease = record['symptoms_categories'][0] if record['symptoms_categories'] else None
+            data.append([user_id, disease, datetime, lat, lon, summary])
+        df = pd.DataFrame(data, columns=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"])
+        return df
 
     def count_disease_by_id(df, id_column, target_id):
         return df[id_column].eq(target_id).sum()
@@ -80,7 +93,7 @@ if authenticate_hotspots():
     df = load_data()
     df["USER_ID"] = df["USER_ID"].astype("string")
     df["DISEASE"] = df["DISEASE"].astype("string")
-    df["DATE"] = pd.to_datetime(df["DATE"], format="%d.%m.%Y", errors="coerce")
+    df["DATE"] = pd.to_datetime(df["DATE"], errors="coerce")
     df["LAT"] = df["LAT"].astype("float")
     df["LON"] = df["LON"].astype("float")
     df["SUMMARY"] = df["SUMMARY"].astype("string")
@@ -124,10 +137,10 @@ if authenticate_hotspots():
 
     with st.sidebar:
         start_date = st.date_input(
-            label="Start date", min_value=min_date, max_value=max_date
+            label="Start date", value=min_date, min_value=min_date, max_value=max_date
         )
         end_date = st.date_input(
-            label="End date", min_value=start_date, max_value=max_date
+            label="End date", value=max_date, min_value=min_date, max_value=max_date
         )
         main_df = df[
             (df["DATE"].dt.date >= start_date) & (df["DATE"].dt.date <= end_date)
@@ -146,7 +159,7 @@ if authenticate_hotspots():
                 st.map(DEFAULT, color="#00000000", zoom=8)
 
             else:
-                st.map(main_df, color="COLOR", zoom=9)
+                st.map(main_df[~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])], color="COLOR", zoom=9)
 
                 if start_date != end_date:
                     ratio = []
@@ -192,14 +205,14 @@ if authenticate_hotspots():
             else:
                 color_idx = unique_diseases.index(disease_id)
                 st.map(
-                    main_df[main_df["DISEASE"] == disease_id],
+                    main_df[(main_df["DISEASE"] == disease_id) & ~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])],
                     color=colors[color_idx],
                     zoom=9,
                 )
 
                 if start_date != end_date:
                     count_per_date = (
-                        main_df[main_df["DISEASE"] == disease_id]
+                        main_df[(main_df["DISEASE"] == disease_id) & ~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])]
                         .groupby("DATE")["DISEASE"]
                         .count()
                     )
@@ -250,6 +263,13 @@ if authenticate_hotspots():
             st.write("### Detailed Data for", disease_id)
             st.dataframe(
                 main_df[main_df["DISEASE"] == disease_id][
+                    ["DATE", "LAT", "LON", "SUMMARY"]
+                ]
+            )
+        else:
+            st.write("### Detailed Data")
+            st.dataframe(
+                main_df[
                     ["DATE", "LAT", "LON", "SUMMARY"]
                 ]
             )
