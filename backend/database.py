@@ -5,7 +5,7 @@ import os
 class Database:
     def __init__(self):
         # Set up the MongoDB client
-        mongo_uri = os.getenv("MONGODB_URI")
+        mongo_uri = os.getenv("MONGO_URI")
         self.client = MongoClient(mongo_uri)
         # Access a specific database
         self.db = self.client.get_database(os.getenv("MONGODB_DATABASE"))
