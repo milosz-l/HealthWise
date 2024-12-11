@@ -1,7 +1,12 @@
+terraform/
+README.md
+
 .env
+*.pem
 docs
 *.pdf
 .git
+.gitignore
 .vscode
 __pycache__
 .DS_Store

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: <your-aws-account-id>.dkr.ecr.<your-aws-region>.amazonaws.com/healthwise-backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - MONGO_URI=${MONGO_URI}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: <your-aws-account-id>.dkr.ecr.<your-aws-region>.amazonaws.com/healthwise-frontend:latest
+    ports:
+      - "8501:8501"
+    environment:
+      - CHATBOT_PASSWORD=${CHATBOT_PASSWORD}
+      - HOTSPOTS_PASSWORD=${HOTSPOTS_PASSWORD}
+    depends_on:
+      - backend

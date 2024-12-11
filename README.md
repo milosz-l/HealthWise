@@ -73,7 +73,10 @@ pre-commit run --all-files
 
 ## Deployment
 
-### Testing Docker
+Prerequisites:
+- **Docker**: Install Docker on your local machine.
+
+### Local deployment
 
 #### Build and run Docker containers
 
@@ -82,3 +85,64 @@ You can start both containers with docker compose with:
 ```bash
 docker-compose up --build
 ```
+
+### Deployment in the cloud
+
+#### Step 1: Build Docker images
+
+Prerequisites:
+- **Terraform**: Install Terraform on your local machine.
+
+#### Step 1: Deploy to the cloud
+
+##### Option 1: AWS
+Prerequisites:
+- **AWS CLI**: Install and configure AWS CLI on your local machine.
+    - enable AWS CLI on your local machine: `aws configure`
+        - you can get Access key for your IAM account from the AWS console
+        - in AWS console you can also find your AWS account ID, which is needed for the next step
+- create two ECR repositories through AWS console: `healthwise-backend` and `healthwise-frontend`
+    - both should be mutable
+- fill in the `docker-compose.yml.aws.example` file with your AWS account ID and region and rename it to `docker-compose.yml`
+
+Firstly, authenticate Docker with ECR (remember to replace `<your-aws-region>` and `<your-aws-account-id>` with your AWS region and account ID):
+```bash
+aws ecr get-login-password --region <your-aws-region> | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.<your-aws-region>.amazonaws.com
+```
+
+Secondly, build the Docker images:
+```bash
+docker-compose up --build
+```
+NOTE: If you get warnings about environment variables, set them manually in the terminal like this (example for `MONGO_URI`):
+```bash
+export MONGO_URI=<your-mongo-uri>
+```
+
+After successful build, you can turn off the containers.
+
+Thirdly, push the Docker images to ECR:
+```bash
+docker-compose push
+```
+
+Before running Terraform script, go to `EC2 -> Key Pairs -> Create key pair` and download the key pair:
+- key pair name: `healthwise-key-name` (needs to match the key pair name in the `terraform/aws/terraform.tfvars` file)
+- type: `RSA`
+Then, put the downloaded key pair file in the `terraform/aws/` directory.
+
+Now, run the Terraform script:
+```bash
+cd terraform/aws
+terraform init
+terraform apply
+```
+
+Alternatively (in case of problems that's how you can debug) - create docker-compose.yml file manually and run it:
+```bash
+nano docker-compose.yml
+sudo docker-compose up -d
+```
+NOTE: The docker compose above is for running the docker images. So it should be based on the docker compose in `terraform/aws/main.tf` file instead of the `docker-compose.yml.aws.example` file which is for building the images locally and pushing them to ECR.
+
+After `terraform apply` is finished, **make sure that the EC2 instance finished initializing in the AWS console** (if the `Status check` is still `initializing`, wait for it to finish - it can take few minutes). Then, you can access the app through browser like this: `http://<ec2-instance-public-ip>:8501`.
