@@ -9,7 +9,6 @@ class KnowledgeChain:
         if source is not None:
             self.source = source
             llm = TavilySearchAPIRetriever(
-                k=7,
                 include_generated_answer=True,
                 include_domains=[self.source],
                 search_depth="advanced",
