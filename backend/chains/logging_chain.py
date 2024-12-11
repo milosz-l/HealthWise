@@ -30,7 +30,7 @@ class LoggingChain:
         return summarization_chain | classification_chain | saving_chain
 
     def _get_current_datetime(self, state):
-        return (datetime.now() - timedelta(days=2)).isoformat()
+        return datetime.now().isoformat()
 
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
