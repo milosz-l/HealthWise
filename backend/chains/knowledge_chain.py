@@ -1,9 +1,5 @@
-from langchain_community.chat_models import ChatPerplexity
 from langchain_community.retrievers import TavilySearchAPIRetriever
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-import os
 
 
 class KnowledgeChain:
@@ -13,7 +9,6 @@ class KnowledgeChain:
         if source is not None:
             self.source = source
             llm = TavilySearchAPIRetriever(
-                k=7,
                 include_generated_answer=True,
                 include_domains=[self.source],
                 search_depth="advanced",
@@ -29,8 +24,13 @@ class KnowledgeChain:
         return "\n".join(formatted_response)
 
     def invoke(self, state):
+        try:
+            retrieved_knowledge = self.chain.invoke(state["rephrased_request"])
+        except:  # TODO: fix tavily error
+            pass
         return {
             "source_knowledge_pairs": [
-                (self.source, self.chain.invoke(state["rephrased_request"]))
-            ]
+                (self.source, retrieved_knowledge)
+            ],
+            "processing_state": [f"Retrieved medical information from [{self.source}]({self.source}). Aggregating knowledge..."]
         }
