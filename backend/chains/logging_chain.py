@@ -49,7 +49,7 @@ Summary:
     def _classify_symptoms(self, state):
         prompt_template = PromptTemplate.from_template(
             """
-Classify the following medical summary into one or more of the following categories. Return the applicable categories as a comma-separated list:
+Classify the following medical summary into one or more of the following categories. The first category should be the most relevant one. Return the applicable categories as a comma-separated list:
 
 List of categories:
 General Symptoms, Respiratory Symptoms, Cardiovascular Symptoms, Gastrointestinal Symptoms, Neurological Symptoms, Musculoskeletal Symptoms, Dermatological Symptoms, Psychological Symptoms, Endocrine Symptoms, Urinary Symptoms, Reproductive Symptoms, ENT (Ear/Nose/Throat) Symptoms, Ophthalmological Symptoms, None
