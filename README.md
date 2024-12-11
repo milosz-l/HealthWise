@@ -11,7 +11,7 @@ Main features:
 - Outbreak detector for health authorities - **analysis panel for health authorities** with visualisations and forecasting
 
 ## Demo video
-[![HealthWise Demo](docs/figures/play_video_thumbnail.png)](https://youtu.be/89t-N923Log "Watch the demo video")
+[![HealthWise Demo](docs/figures/play_video_thumbnail.png)](https://youtu.be/ZP9zoNelaC4 "Watch the demo video")
 ***Click above to watch the demo video!***
 
 ## Tech stack
