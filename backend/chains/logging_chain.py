@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from datetime import datetime, timedelta
+from datetime import datetime
 from database import Database
 
 
@@ -30,7 +30,7 @@ class LoggingChain:
         return summarization_chain | classification_chain | saving_chain
 
     def _get_current_datetime(self, state):
-        return (datetime.now() - timedelta(days=2)).isoformat()
+        return datetime.now().isoformat()
 
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
