@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from graph import MedicalGraph
+from database import Database
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, StreamingResponse
@@ -91,6 +92,11 @@ async def debug_ask(user_request: UserRequest):
         "processing_state": []
     }
     return graph.invoke(initial_state)
+
+
+@app.get("/conversations")
+async def debug_ask():
+    return json.dumps(Database().get_conversations())
 
 
 if __name__ == "__main__":
