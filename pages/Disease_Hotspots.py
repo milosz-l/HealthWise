@@ -4,7 +4,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import os
 
-from sklearn.linear_model import Lasso
+from sktime.forecasting.statsforecast import StatsForecastAutoCES
+from sktime.forecasting.base import ForecastingHorizon
 from matplotlib.ticker import MaxNLocator
 from dotenv import load_dotenv
 
@@ -60,18 +61,14 @@ if authenticate_hotspots():
         )
 
     def predict_data(cumulative_count):
-        dates_as_numbers = np.array(
-            (cumulative_count.index - cumulative_count.index[0]).days
-        ).reshape(-1, 1)
-        model.fit(dates_as_numbers, cumulative_count.values)
 
         extended_dates = pd.date_range(
             cumulative_count.index[-1], periods=DAYS_TO_PREDICT, freq="D"
         )[1:]
-        extended_dates_as_numbers = np.array(
-            (extended_dates - cumulative_count.index[0]).days
-        ).reshape(-1, 1)
-        preds = model.predict(extended_dates_as_numbers)
+
+        y_train = cumulative_count.values
+        fh = ForecastingHorizon(extended_dates, is_relative=False)
+        preds = model.fit_predict(y_train, fh=fh)
         ax2.plot(
             extended_dates, preds, color="red", linestyle="--", label="Predicted Trend"
         )
@@ -120,7 +117,7 @@ if authenticate_hotspots():
     fig3, ax3 = plt.subplots()
     ax3.axis("equal")
 
-    model = Lasso()
+    model = StatsForecastAutoCES()
 
     with st.sidebar:
         start_date = st.date_input(
