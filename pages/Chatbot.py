@@ -64,16 +64,23 @@ if authenticate_chatbot():
     if "conversation_id" not in st.session_state:
         st.session_state["conversation_id"] = str(uuid.uuid4())
 
+    if "disabled" not in st.session_state:
+        st.session_state["disabled"] = False
+
+    if "payload" not in st.session_state:
+        st.session_state["payload"] = None
+
     for msg in st.session_state.messages:
         for role, content in msg.items():
             if role == "bot":
                 role = "assistant"
             st.chat_message(role).write(content)
 
-    if prompt := st.chat_input():
+    prompt = st.chat_input(disabled=st.session_state.disabled)
+    if prompt:
         st.session_state.messages.append({"user": prompt})
         st.chat_message("user").write(prompt)
-        payload = {
+        st.session_state.payload = {
             "conversation_history": st.session_state.messages,
             "location": (
                 f"{location['latitude']},{location['longitude']}"
@@ -82,11 +89,15 @@ if authenticate_chatbot():
             ),
             "conversation_id": st.session_state["conversation_id"],
         }
+        st.session_state.disabled = True
+        st.rerun()
 
+    if st.session_state.payload:
         try:
-            response = requests.post(f"{BACKEND_URL}/", json=payload, stream=True)
+            response = requests.post(f"{BACKEND_URL}/", json=st.session_state.payload, stream=True)
             response.raise_for_status()
-
+            st.session_state.disabled = False
+            st.session_state.payload = None
             with st.chat_message("assistant"):
                 response_placeholder = st.empty()
                 response_text = ""
@@ -101,13 +112,15 @@ if authenticate_chatbot():
                             response_text += chunk_content
                             response_placeholder.write(response_text)
                         elif chunk_key == "final_answer":
+                            st.session_state.disabled = True
                             response_text += chunk_content
                             response_placeholder.write(response_text)
-
             st.session_state.messages.append(
                 {"bot": response_text}
             )
+            st.rerun()
         except requests.exceptions.RequestException as e:
             st.error(f"An error occurred: {e}")
+
 else:
     st.warning("Please enter the password to access the chatbot.")
