@@ -4,6 +4,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import os
 from pymongo import MongoClient
+import requests
 
 from sklearn.linear_model import Lasso
 from matplotlib.ticker import MaxNLocator
@@ -40,26 +41,34 @@ if authenticate_hotspots():
     DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
 
     def load_data():
-        mongodb_uri = os.getenv('MONGODB_URI')
-        mongodb_database = os.getenv('MONGODB_DATABASE')
-        client = MongoClient(mongodb_uri)
-        db = client[mongodb_database]
-        collection = db['conversations']
-        records = collection.find()
-        data = []
-        for record in records:
-            user_id = record['conversation_id']
-            if record['location'] != "":
-                location = record['location'].split(",")
-                lat, lon = location[0], location[1]
-            else:
-                lat, lon = None, None
-            datetime = record['datetime']
-            summary = record['summary']
-            disease = record['symptoms_categories'][0] if record['symptoms_categories'] else None
-            data.append([user_id, disease, datetime, lat, lon, summary])
-        df = pd.DataFrame(data, columns=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"])
-        return df
+        """Loads conversation data from the backend using an HTTP request."""
+        backend_url = (
+            "http://backend:8000/conversations"  # Assuming this is your backend URL
+        )
+        try:
+            response = requests.get(backend_url)
+            response.raise_for_status()  # Raise an exception for bad status codes
+            conversations = response.json()
+            data = []
+            for record in conversations:
+                user_id = record.get("conversation_id", None)
+                location = record.get("location", "")
+                if location:
+                    location_parts = location.split(",")
+                    lat, lon = location_parts[0], location_parts[1]
+                else:
+                    lat, lon = None, None
+                datetime = record.get("datetime", None)
+                summary = record.get("summary", None)
+                disease = record.get("symptoms_categories", [None])[0]
+                data.append([user_id, disease, datetime, lat, lon, summary])
+            df = pd.DataFrame(
+                data, columns=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"]
+            )
+            return df
+        except requests.exceptions.RequestException as e:
+            st.error(f"Failed to load data from backend: {e}")
+            return pd.DataFrame()  # Return an empty DataFrame on error
 
     def count_disease_by_id(df, id_column, target_id):
         return df[id_column].eq(target_id).sum()
@@ -159,7 +168,11 @@ if authenticate_hotspots():
                 st.map(DEFAULT, color="#00000000", zoom=8)
 
             else:
-                st.map(main_df[~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])], color="COLOR", zoom=9)
+                st.map(
+                    main_df[~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])],
+                    color="COLOR",
+                    zoom=9,
+                )
 
                 if start_date != end_date:
                     ratio = []
@@ -205,14 +218,22 @@ if authenticate_hotspots():
             else:
                 color_idx = unique_diseases.index(disease_id)
                 st.map(
-                    main_df[(main_df["DISEASE"] == disease_id) & ~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])],
+                    main_df[
+                        (main_df["DISEASE"] == disease_id)
+                        & ~pd.isna(main_df["LAT"])
+                        & ~pd.isna(main_df["LON"])
+                    ],
                     color=colors[color_idx],
                     zoom=9,
                 )
 
                 if start_date != end_date:
                     count_per_date = (
-                        main_df[(main_df["DISEASE"] == disease_id) & ~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])]
+                        main_df[
+                            (main_df["DISEASE"] == disease_id)
+                            & ~pd.isna(main_df["LAT"])
+                            & ~pd.isna(main_df["LON"])
+                        ]
                         .groupby("DATE")["DISEASE"]
                         .count()
                     )
@@ -268,10 +289,6 @@ if authenticate_hotspots():
             )
         else:
             st.write("### Detailed Data")
-            st.dataframe(
-                main_df[
-                    ["DATE", "LAT", "LON", "SUMMARY"]
-                ]
-            )
+            st.dataframe(main_df[["DATE", "LAT", "LON", "SUMMARY"]])
 else:
     st.warning("Please enter the password to access the admin panel.")

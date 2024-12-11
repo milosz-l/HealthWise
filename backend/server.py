@@ -11,6 +11,8 @@ from pydantic import BaseModel
 from typing import Optional
 import uvicorn, json
 
+from .database import Database
+
 app = FastAPI()
 
 origins = ["*"]
@@ -23,6 +25,7 @@ app.add_middleware(
 )
 
 graph = MedicalGraph().create()
+db = Database()
 
 
 # Define request body model
@@ -52,22 +55,29 @@ async def ask(user_request: UserRequest):
             "summary": "",
             "symptoms_categories": [],
             "datetime": "",
-            "processing_state": []
+            "processing_state": [],
         }
-        for stream_chunk in graph.stream(initial_state, stream_mode=["updates", "messages"]):
-            if stream_chunk[0] == "messages":  # Stream the follow-up question, final answer or "unrelated" message
+        for stream_chunk in graph.stream(
+            initial_state, stream_mode=["updates", "messages"]
+        ):
+            if (
+                stream_chunk[0] == "messages"
+            ):  # Stream the follow-up question, final answer or "unrelated" message
                 message_chunk, metadata = stream_chunk[1]
                 node_name = metadata.get("langgraph_node", "")
                 node_trigger = metadata.get("langgraph_triggers", [""])[0]
                 chunk_answer = getattr(message_chunk, "content", "")
                 if node_name == "chatbot_agent" and node_trigger == "aggregation_agent":
                     yield json.dumps({"final_answer": chunk_answer})
-                elif node_name == "validation_agent" and metadata.get("ls_temperature") == 0.1:
+                elif (
+                    node_name == "validation_agent"
+                    and metadata.get("ls_temperature") == 0.1
+                ):
                     yield json.dumps({"answer": chunk_answer})
             elif stream_chunk[0] == "updates":  # Stream the processing state
                 for _, attributes in stream_chunk[1].items():
                     if attributes:
-                        processing_state = attributes.get('processing_state', [])
+                        processing_state = attributes.get("processing_state", [])
                         if processing_state:
                             yield json.dumps({"processing_state": processing_state[0]})
 
@@ -88,9 +98,25 @@ async def debug_ask(user_request: UserRequest):
         "summary": "",
         "symptoms_categories": [],
         "datetime": "",
-        "processing_state": []
+        "processing_state": [],
     }
     return graph.invoke(initial_state)
+
+
+@app.get("/conversations")
+async def get_conversations():
+    """Retrieves all conversation data from the database."""
+    conversations = db.conversations_collection.find()
+    return [
+        {
+            "conversation_id": str(conv.get("conversation_id", "")),
+            "location": conv.get("location", ""),
+            "datetime": conv.get("datetime", ""),
+            "summary": conv.get("summary", ""),
+            "symptoms_categories": conv.get("symptoms_categories", []),
+        }
+        for conv in conversations
+    ]
 
 
 if __name__ == "__main__":

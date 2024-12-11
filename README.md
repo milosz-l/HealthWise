@@ -146,3 +146,72 @@ sudo docker-compose up -d
 NOTE: The docker compose above is for running the docker images. So it should be based on the docker compose in `terraform/aws/main.tf` file instead of the `docker-compose.yml.aws.example` file which is for building the images locally and pushing them to ECR.
 
 After `terraform apply` is finished, **make sure that the EC2 instance finished initializing in the AWS console** (if the `Status check` is still `initializing`, wait for it to finish - it can take few minutes). Then, you can access the app through browser like this: `http://<ec2-instance-public-ip>:8501`.
+
+##### Adding domain and HTTPS
+
+```bash
+sudo apt install -y nginx
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d <your-domain>
+```
+
+In case of errors:
+- In the AWS Management Console, go to EC2, under "Network & Security", click on "Security Groups", find the security group associated with your EC2 instance (likely named healthwise-sg), click on the security group and then select the "Inbound rules" tab. Ensure that you have an inbound rule allowing HTTP traffic on port 80 from anywhere (or at least from Let's Encrypt's servers).
+    - TODO: add this to Terraform script
+    - Additionally, you may need to enable traffic for HTTPS as well
+        - TODO: add this to Terraform script
+
+Then update nginx config
+```bash
+sudo nano /etc/nginx/sites-enabled/default
+```
+
+Inside, look for this part:
+```
+server {
+    server_name <your-domain>;
+```
+Underneath, add this part:
+```
+        location / {
+            proxy_pass http://localhost:8501;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # WebSocket specific settings
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+```
+
+Then, test the configuration and reload nginx:
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+#### Updating already running app
+
+##### Step 1: Locally
+1. Merge from `main` branch to `feature/deployment` branch
+
+```bash
+docker-compose up --build
+docker-compose push
+```
+
+##### Step 2: In the cloud
+###### Updating already running EC2 instance after downloading new docker images
+When updating already running EC2 instance, then use:
+```bash
+cd /
+sudo docker images
+sudo docker system prune -a
+sudo docker images
+sudo docker-compose pull
+sudo docker-compose down
+sudo docker-compose up -d
+```
