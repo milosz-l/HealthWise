@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
 import os
+import json
 from pymongo import MongoClient
 import requests
 
@@ -39,36 +43,37 @@ if authenticate_hotspots():
     LAT_CENTER = 20.7967
     LON_CENTER = -156.3319
     DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
+    BACKEND_URL = "http://localhost:8000"
+
+    def get_conversations():
+        url = f"{BACKEND_URL}/conversations"
+        response = requests.get(url)
+        if response.status_code == 200:
+            conversations_data = json.loads(response.json())
+            return conversations_data
+        else:
+            raise Exception(f"Failed to retrieve data: {response.status_code}")
 
     def load_data():
-        """Loads conversation data from the backend using an HTTP request."""
-        backend_url = (
-            "http://backend:8000/conversations"  # Assuming this is your backend URL
+        conversations_data = get_conversations()
+        data = []
+        for record in conversations_data:
+            user_id = record.get("conversation_id")
+            location = record.get("location", "")
+            if location:
+                lat, lon = location.split(",")
+            else:
+                lat, lon = None, None
+            datetime = record.get("datetime")
+            summary = record.get("summary", "")
+            symptoms_categories = record.get("symptoms_categories", [])
+            disease = symptoms_categories[0] if symptoms_categories else None
+            data.append([user_id, disease, datetime, lat, lon, summary])
+
+        df = pd.DataFrame(
+            data, columns=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"]
         )
-        try:
-            response = requests.get(backend_url)
-            response.raise_for_status()  # Raise an exception for bad status codes
-            conversations = response.json()
-            data = []
-            for record in conversations:
-                user_id = record.get("conversation_id", None)
-                location = record.get("location", "")
-                if location:
-                    location_parts = location.split(",")
-                    lat, lon = location_parts[0], location_parts[1]
-                else:
-                    lat, lon = None, None
-                datetime = record.get("datetime", None)
-                summary = record.get("summary", None)
-                disease = record.get("symptoms_categories", [None])[0]
-                data.append([user_id, disease, datetime, lat, lon, summary])
-            df = pd.DataFrame(
-                data, columns=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"]
-            )
-            return df
-        except requests.exceptions.RequestException as e:
-            st.error(f"Failed to load data from backend: {e}")
-            return pd.DataFrame()  # Return an empty DataFrame on error
+        return df
 
     def count_disease_by_id(df, id_column, target_id):
         return df[id_column].eq(target_id).sum()
@@ -176,7 +181,6 @@ if authenticate_hotspots():
 
                 if start_date != end_date:
                     ratio = []
-
                     for color_idx, id in enumerate(unique_diseases):
                         count_per_date = (
                             main_df[main_df["DISEASE"] == id]
@@ -184,6 +188,8 @@ if authenticate_hotspots():
                             .count()
                         )
                         cumulative_count = count_per_date.cumsum()
+                        if id == "Neurological Symptoms":
+                            st.write(main_df[main_df["DISEASE"] == id])
                         ax2.plot(
                             cumulative_count.index,
                             cumulative_count,
@@ -229,23 +235,28 @@ if authenticate_hotspots():
 
                 if start_date != end_date:
                     count_per_date = (
-                        main_df[
-                            (main_df["DISEASE"] == disease_id)
-                            & ~pd.isna(main_df["LAT"])
-                            & ~pd.isna(main_df["LON"])
-                        ]
-                        .groupby("DATE")["DISEASE"]
+                        main_df[main_df["DISEASE"] == disease_id]
+                        .groupby(main_df["DATE"].dt.floor("D"))["DISEASE"]
                         .count()
                     )
                     cumulative_count = count_per_date.cumsum()
 
-                    ax1.hist(
+                    fig1, ax1 = plt.subplots()
+                    ax1.bar(
                         count_per_date.index,
-                        bins=len(count_per_date),
-                        weights=count_per_date,
+                        count_per_date,
+                        width=0.8,  # Adjust bar width for better alignment
                         color=colors[color_idx],
                         edgecolor="black",
+                        align="center",  # Center bars on the ticks
                     )
+                    ax1.xaxis.set_major_locator(mdates.DayLocator())
+                    ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                    plt.xticks(rotation=45)
+                    ax1.set_xlabel("Date")
+                    ax1.set_ylabel("Number of cases")
+                    ax1.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+
                     st.write("### Analysis of New Cases:")
                     st.pyplot(fig1)
 

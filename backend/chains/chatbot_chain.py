@@ -10,7 +10,7 @@ You are a medical assistant helper. Your task is to take the conversation betwee
 Previous conversation history with latest user request:
 <CONVERSATION_HISTORY>
 {conversation_history}
-<CONVERSATION_HISTORY>
+</CONVERSATION_HISTORY>
 Rephrased query:
 """
 

@@ -20,7 +20,8 @@ class Database:
             print(f"An error occurred while saving the conversation: {e}")
             # raise e
 
-    def get_conversation(self, conversation_id):
-        return self.conversations_collection.find_one(
-            {"conversation_id": conversation_id}
-        )
+    def get_conversations(self):
+        return list(self.conversations_collection.find(
+            {},
+            {"_id": 0}
+        ))

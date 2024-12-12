@@ -34,8 +34,7 @@ class LoggingChain:
 
     def _summarize_conversation(self, state):
         prompt_template = PromptTemplate.from_template(
-            """
-Summarize the user's symptoms from the following conversation into one sentence. The summary should be in English.
+            """Summarize the user's symptoms from the following conversation into one sentence. The summary should be in English.
 
 Conversation:
 {conversation_history}
@@ -48,8 +47,7 @@ Summary:
 
     def _classify_symptoms(self, state):
         prompt_template = PromptTemplate.from_template(
-            """
-Classify the following medical summary into one or more of the following categories. The first category should be the most relevant one. Return the applicable categories as a comma-separated list:
+            """Classify the following medical summary into one or more of the following categories. The first category should be the most relevant one. Return the applicable categories as a comma-separated list:
 
 List of categories:
 Respiratory Symptoms, Gastrointestinal Symptoms, Neurological Symptoms, Musculoskeletal Symptoms, Dermatological Symptoms, Psychological Symptoms, Endocrine Symptoms, Urinary Symptoms, Reproductive Symptoms, ENT (Ear/Nose/Throat) Symptoms, Ophthalmological Symptoms, None
@@ -73,6 +71,7 @@ Categories for given summary:
         return categories
 
     def _save_data(self, state):
+        state["conversation_history"].append({"bot": state["answer"]})
         self.db.save_conversation(
             {
                 "conversation_id": state["conversation_id"],

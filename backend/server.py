@@ -104,19 +104,8 @@ async def debug_ask(user_request: UserRequest):
 
 
 @app.get("/conversations")
-async def get_conversations():
-    """Retrieves all conversation data from the database."""
-    conversations = db.conversations_collection.find()
-    return [
-        {
-            "conversation_id": str(conv.get("conversation_id", "")),
-            "location": conv.get("location", ""),
-            "datetime": conv.get("datetime", ""),
-            "summary": conv.get("summary", ""),
-            "symptoms_categories": conv.get("symptoms_categories", []),
-        }
-        for conv in conversations
-    ]
+async def conversations():
+    return json.dumps(db.get_conversations())
 
 
 if __name__ == "__main__":
