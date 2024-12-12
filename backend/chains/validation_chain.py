@@ -13,7 +13,7 @@ Analyze the latest user request (written in any language) in the context of the 
 2. If additional information is needed, or if the required information is complete.
 
 Instructions:
-- Return "UNRELATED" if the topic is not related to a medical condition.
+- Return "UNRELATED" if the last user question is not describing the medical condition.
 - If essential information is missing, generate a follow-up question that asks for all required details without incorporating your own thoughts or considerations.
 - Return "COMPLETE" if all required details are provided.
 
@@ -35,19 +35,15 @@ Follow-up question text (in English), or UNRELATED, or COMPLETE:
 """
 
     TRANSLATE_PROMPT_TEMPLATE = """
-You are a translator from English to any language. Translate the message below using the language in which the user's request is written.
-Message to translate (in English):
+You are a translator from English to any language. Translate the message below using the language in which the user's request is written:
 {message_to_translate}
 
-Latest user request (written in language to use for translation):
-{user_request}
-
-Translated message (if latest user request is in English, return the message as it is):
+Text of the message translated to language in which "{user_request}" is written (if English is used, don't translate the message):
 """
 
     def create(self):
         llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
-        translation_llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.1)
+        translation_llm = ChatOpenAI(model_name="gpt-4o", temperature=0.1)
         return {
             "message_to_translate": (
                 {"conversation_history": self._format_conversation_history}
