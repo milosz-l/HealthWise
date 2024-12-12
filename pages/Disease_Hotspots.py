@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
 import os
 from pymongo import MongoClient
 
@@ -163,7 +165,6 @@ if authenticate_hotspots():
 
                 if start_date != end_date:
                     ratio = []
-
                     for color_idx, id in enumerate(unique_diseases):
                         count_per_date = (
                             main_df[main_df["DISEASE"] == id]
@@ -171,6 +172,8 @@ if authenticate_hotspots():
                             .count()
                         )
                         cumulative_count = count_per_date.cumsum()
+                        if id == "Neurological Symptoms":
+                            st.write(main_df[main_df["DISEASE"] == id])
                         ax2.plot(
                             cumulative_count.index,
                             cumulative_count,
@@ -212,19 +215,28 @@ if authenticate_hotspots():
 
                 if start_date != end_date:
                     count_per_date = (
-                        main_df[(main_df["DISEASE"] == disease_id) & ~pd.isna(main_df["LAT"]) & ~pd.isna(main_df["LON"])]
-                        .groupby("DATE")["DISEASE"]
+                        main_df[main_df["DISEASE"] == disease_id]
+                        .groupby(main_df["DATE"].dt.floor('D'))["DISEASE"]
                         .count()
                     )
                     cumulative_count = count_per_date.cumsum()
 
-                    ax1.hist(
+                    fig1, ax1 = plt.subplots()
+                    ax1.bar(
                         count_per_date.index,
-                        bins=len(count_per_date),
-                        weights=count_per_date,
+                        count_per_date,
+                        width=0.8,  # Adjust bar width for better alignment
                         color=colors[color_idx],
                         edgecolor="black",
+                        align='center'  # Center bars on the ticks
                     )
+                    ax1.xaxis.set_major_locator(mdates.DayLocator())
+                    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+                    plt.xticks(rotation=45)
+                    ax1.set_xlabel('Date')
+                    ax1.set_ylabel('Number of cases')
+                    ax1.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+
                     st.write("### Analysis of New Cases:")
                     st.pyplot(fig1)
 
