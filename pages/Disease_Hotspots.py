@@ -1,10 +1,12 @@
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 import os
+import json
 from pymongo import MongoClient
 
 from sklearn.linear_model import Lasso
@@ -40,26 +42,33 @@ if authenticate_hotspots():
     LAT_CENTER = 20.7967
     LON_CENTER = -156.3319
     DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
+    BACKEND_URL = "http://localhost:8000"
+
+    def get_conversations():
+        url = f"{BACKEND_URL}/conversations"
+        response = requests.get(url)
+        if response.status_code == 200:
+            conversations_data = json.loads(response.json())
+            return conversations_data
+        else:
+            raise Exception(f"Failed to retrieve data: {response.status_code}")
 
     def load_data():
-        mongodb_uri = os.getenv('MONGODB_URI')
-        mongodb_database = os.getenv('MONGODB_DATABASE')
-        client = MongoClient(mongodb_uri)
-        db = client[mongodb_database]
-        collection = db['conversations']
-        records = collection.find()
+        conversations_data = get_conversations()
         data = []
-        for record in records:
-            user_id = record['conversation_id']
-            if record['location'] != "":
-                location = record['location'].split(",")
-                lat, lon = location[0], location[1]
+        for record in conversations_data:
+            user_id = record.get('conversation_id')
+            location = record.get('location', "")
+            if location:
+                lat, lon = location.split(",")
             else:
                 lat, lon = None, None
-            datetime = record['datetime']
-            summary = record['summary']
-            disease = record['symptoms_categories'][0] if record['symptoms_categories'] else None
+            datetime = record.get('datetime')
+            summary = record.get('summary', "")
+            symptoms_categories = record.get('symptoms_categories', [])
+            disease = symptoms_categories[0] if symptoms_categories else None
             data.append([user_id, disease, datetime, lat, lon, summary])
+
         df = pd.DataFrame(data, columns=["USER_ID", "DISEASE", "DATE", "LAT", "LON", "SUMMARY"])
         return df
 
