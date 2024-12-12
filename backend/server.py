@@ -24,6 +24,7 @@ app.add_middleware(
 )
 
 graph = MedicalGraph().create()
+db = Database()
 
 
 # Define request body model
@@ -95,8 +96,8 @@ async def debug_ask(user_request: UserRequest):
 
 
 @app.get("/conversations")
-async def debug_ask():
-    return json.dumps(Database().get_conversations())
+async def conversations():
+    return json.dumps(db.get_conversations())
 
 
 if __name__ == "__main__":
