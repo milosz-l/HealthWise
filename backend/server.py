@@ -95,7 +95,7 @@ async def debug_ask(user_request: UserRequest):
 
 
 @app.get("/conversations")
-async def debug_ask():
+async def conversations():
     return json.dumps(Database().get_conversations())
 
 
