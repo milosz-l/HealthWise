@@ -43,7 +43,7 @@ if authenticate_hotspots():
     LAT_CENTER = 20.7967
     LON_CENTER = -156.3319
     DEFAULT = pd.DataFrame({"LAT": [LAT_CENTER], "LON": [LON_CENTER]})
-    BACKEND_URL = "http://localhost:8000"
+    BACKEND_URL = "http://backend:8000"
 
     def get_conversations():
         url = f"{BACKEND_URL}/conversations"
