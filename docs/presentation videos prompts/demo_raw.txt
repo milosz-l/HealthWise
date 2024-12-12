@@ -1,0 +1,108 @@
+**Slide 1: Welcome to HealthWise**
+
+**(Screen: Show the HealthWise landing page - `HealthWise.py`)**
+
+Welcome to HealthWise! Your trusted health assistant and outbreak detector. Let's dive into a quick demo to see how it works.
+
+**Slide 2: Chatbot Introduction**
+
+**(Screen: Navigate to the Chatbot page - `pages/Chatbot.py`)**
+
+First, let's explore the chatbot. This part of the app is designed for anyone experiencing health issues.
+
+**Slide 3: Location Sharing (Optional)**
+
+**(Screen: Show the sidebar with the "Share location" button)**
+
+You'll see an option to share your location on the sidebar. This is completely optional but can be very helpful for health authorities to monitor potential outbreaks. For example, a cluster of gastrointestinal issues in a specific area could indicate a localized problem.
+
+**(Screen: Click the "Share location" button and show the map)**
+
+**Slide 4: Interacting with the Chatbot**
+
+**(Screen: Start typing in the chat input)**
+
+Now, let's see the health assistant in action. Let's say you're experiencing stomach pain on your left side. You can type that into the chatbot.
+
+**(Screen: Type "My stomach hurts on the left side" and send the message)**
+
+**Slide 5: Validation Agent**
+
+**(Screen: Show the chatbot asking follow-up questions)**
+
+The chatbot will then ask some follow-up questions to gather more context about your symptoms.
+
+**(Screen: Respond to the chatbot's questions, simulating a short conversation)**
+
+**Slide 6: Knowledge Agents**
+
+**(Screen: Show the chatbot's response indicating that it's gathering information)**
+
+Once the validation agent has enough information, it sends a summary of your symptoms to the knowledge agents. These agents asynchronously search the web, but they're restricted to trusted sources like nhs.uk, medlineplus.gov, and cdc.gov.
+
+**Slide 7: Aggregation Agent**
+
+**(Screen: Show the chatbot's response indicating that it's preparing a recommendation)**
+
+This information is then passed to the aggregation agent, which compiles it into a personalized recommendation for you.
+
+**Slide 8: Grounded Responses**
+
+**(Screen: Highlight the part of the chatbot's response that mentions the sources)**
+
+This step is crucial. HealthWise grounds its responses ONLY in reliable sources. By restricting web searches to trusted domains, we ensure that the information you receive is both accurate and up-to-date.
+
+**Slide 9: Logging Agent**
+
+**(Screen: Show the final answer from the chatbot)**
+
+After the chatbot provides its final answer, the conversation history is sent to the logging agent. This agent summarizes your symptoms and categorizes them into predefined categories.
+
+**Slide 10: Disease Hotspots Introduction**
+
+**(Screen: Navigate to the Disease Hotspots page - `pages/Disease_Hotspots.py`)**
+
+Now, let's switch gears to the Disease Hotspots section. This is where health authorities can analyze aggregated data to detect potential outbreaks.
+
+**Slide 11: Date Filtering**
+
+**(Screen: Show the date filter on the sidebar)**
+
+Here, you can filter the data by date range.
+
+**(Screen: Adjust the start and end dates in the date filter)**
+
+**Slide 12: Map Visualization**
+
+**(Screen: Show the map)**
+
+The map is a powerful tool for visualizing the geographical distribution of reported symptoms.
+
+**(Screen: Zoom in and out on the map, pan around)**
+
+**Slide 13: Symptom Category Filtering**
+
+**(Screen: Show the "Choose disease ID" dropdown on the sidebar)**
+
+You can also filter by symptom category. For example, let's select "ENT," which stands for Ear, Nose, and Throat symptoms.
+
+**(Screen: Select "ENT" from the dropdown)**
+
+**Slide 14: Additional Visualizations**
+
+**(Screen: Scroll down to show the charts below the map)**
+
+Below the map, you'll find additional visualizations, such as the cumulative number of cases over time and the distribution of different symptom categories.
+
+**Slide 15: Anonymized Conversation Summaries**
+
+**(Screen: Scroll down to show the table at the bottom)**
+
+And finally, you have a table with anonymized summaries of each conversation, providing further details for analysis.
+
+**Slide 16: Conclusion**
+
+**(Screen: Show the HealthWise logo or the landing page)**
+
+That concludes our demo. HealthWise: Empowering individuals and protecting communities. Thank you!
+

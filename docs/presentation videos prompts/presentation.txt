@@ -1,0 +1,22 @@
+Slide 1: Healthwise
+Welcome to Healthwise! Our mission is to empower health through innovation. We are here to transform how health challenges, particularly infectious diseases, are managed in real-time. With our solutions, individuals, professionals, and organizations can access actionable insights that make a real difference.
+
+Slide 2: The Problem
+In today’s fast-paced world, infectious diseases spread faster than our ability to detect and respond to them. Without integrated systems to track symptoms in real time, outbreaks go unnoticed until they escalate. At the same time, individuals face challenges in reporting symptoms easily or receiving guidance on what to do next. These gaps in communication and analysis delay treatments and make it harder for health authorities to act decisively when it matters most.
+
+Slide 3: Our Solution
+We’ve created a solution designed to tackle these challenges with precision and efficiency. At its core is an intuitive chatbot that simplifies symptom reporting, guiding users step-by-step. It doesn’t stop there—it provides personalized recommendations, from suggesting specialists to offering next steps. Behind the scenes, health alerts detect epidemic patterns early, while real-time data analysis tracks symptoms geographically. This ensures that both individuals and authorities have the tools to act swiftly and effectively.
+
+Slide 4: System Agents
+Our system operates through a team of specialized agents, each designed to handle a specific task. The Chatbot Agent is the user's main point of contact, engaging in conversations and working seamlessly with other agents. The Validation Agent ensures that user queries are clear and complete, identifying any missing details. Knowledge Agents gather critical medical data from various sources, while the Aggregation Agent combines this information into meaningful insights. The Logging Agent keeps detailed records, preparing data for further use. Finally, the Visualization Agent transforms complex outbreak data into clear, interactive visuals, helping us pinpoint areas that require immediate attention.
+
+Slide 5: Key Stakeholders
+This system has far-reaching benefits for a diverse group of stakeholders. Health authorities gain tools for faster outbreak detection, enabling them to respond effectively. Governments can rely on the data to shape public health policies and allocate resources where they’re needed most. Researchers receive a real-time stream of information to deepen their understanding of disease trends, while emergency responders can prioritize their actions during crises. At the heart of it all are patients, who are equipped with timely insights and guidance to take charge of their health.
+
+Slide 6: Impact
+The impact of our system goes beyond individual benefits. Public health trends become visible and accessible, fostering greater awareness across communities. Outbreaks are detected earlier, allowing for faster containment and minimizing their impact. Most importantly, individuals gain confidence and clarity about their health, creating a society that is informed, empowered, and resilient in the face of health challenges.
+
+Slide 7: Overview
+To conclude, the absence of real-time health monitoring has left a critical gap in our ability to manage infectious diseases effectively. Our system bridges this gap by combining user-friendly tools with powerful analytical capabilities. It empowers individuals to make informed decisions while providing health authorities with the insights needed to protect public health. Together, we can create a future where health crises are identified early, addressed swiftly, and managed effectively for everyone’s benefit.
+
+Thank you for your attention.

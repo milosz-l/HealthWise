@@ -1,0 +1,31 @@
+Welcome to HealthWise! Your trusted health assistant and outbreak detector. Let's dive into a quick demo to see how it works.
+
+First, let's explore the chatbot. This part of the app is designed for anyone experiencing health issues.
+
+You'll see an option to share your location on the sidebar. This is completely optional but can be very helpful for health authorities to monitor potential outbreaks. For example, a cluster of gastrointestinal issues in a specific area could indicate a localized problem.
+
+Now, let's see the health assistant in action. Let's say you're experiencing stomach pain on your left side. You can type that into the chatbot.
+
+The chatbot will then ask some follow-up questions to gather more context about your symptoms.
+
+Once the validation agent has enough information, it sends a summary of your symptoms to the knowledge agents. These agents asynchronously search the web, but they're restricted to trusted sources like National Health Service, MedlinePlus or Centers for Disease Control and Prevention.
+
+This step is crucial. HealthWise grounds its responses ONLY in reliable sources. By restricting web searches to trusted domains, we ensure that the information you receive is both accurate and up-to-date.
+
+This information is then passed to the aggregation agent, which compiles it into a personalized recommendation for you.
+
+After the chatbot provides its final answer, the conversation history is sent to the logging agent. This agent summarizes your symptoms and categorizes them.
+
+Now, let's switch gears to the Disease Hotspots section. This is where health authorities can analyze aggregated data to detect potential outbreaks.
+
+Here, you can filter the data by date range.
+
+The map is a powerful tool for visualizing the geographical distribution of reported symptoms.
+
+You can also filter by symptom category. For example, let's select "ENT," which stands for Ear, Nose, and Throat symptoms.
+
+Below the map, you'll find additional visualizations, such as the cumulative number of cases over time and the distribution of different symptom categories.
+
+And finally, you have a table with anonymized summaries of each conversation, providing further details for analysis.
+
+That concludes our demo. HealthWise: Empowering individuals and protecting communities. Thank you!
