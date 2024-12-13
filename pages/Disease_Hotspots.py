@@ -280,7 +280,7 @@ if authenticate_hotspots():
             st.write("### Detailed Data")
             st.dataframe(
                 main_df[
-                    ["DATE", "LAT", "LON", "SUMMARY"]
+                    ["DISEASE", "DATE", "SUMMARY"]
                 ]
             )
 else:
