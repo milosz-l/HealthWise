@@ -188,8 +188,6 @@ if authenticate_hotspots():
                             .count()
                         )
                         cumulative_count = count_per_date.cumsum()
-                        if id == "Neurological Symptoms":
-                            st.write(main_df[main_df["DISEASE"] == id])
                         ax2.plot(
                             cumulative_count.index,
                             cumulative_count,
@@ -299,7 +297,7 @@ if authenticate_hotspots():
                 ]
             )
         else:
-            st.write("### Detailed Data")
-            st.dataframe(main_df[["DATE", "LAT", "LON", "SUMMARY"]])
+            st.write("### Cases Data")
+            st.dataframe(main_df[["DISEASE", "DATE", "SUMMARY"]])
 else:
     st.warning("Please enter the password to access the admin panel.")
