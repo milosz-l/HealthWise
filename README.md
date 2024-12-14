@@ -225,5 +225,6 @@ In case od error with docker pull, try this:
 sudo su -
 aws ecr get-login-password --region <your-aws-region> | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.<your-aws-region>.amazonaws.com
 docker-compose pull
+...
 exit
 ```
