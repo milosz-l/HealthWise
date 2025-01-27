@@ -1,7 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
-from langchain_core.runnables import RunnableLambda
+from langchain_core.runnables import RunnableLambda, RunnableParallel
 
 
 class AggregationChain:
@@ -23,7 +23,7 @@ Aggregated medical information:
 
     def create(self):
         llm = ChatOpenAI(model_name="gpt-4o", temperature=0.0)
-        return {
+        return RunnableParallel({
             "aggregated_knowledge": {
                 "formatted_source_knowledge_pairs": self._format_source_knowledge_pairs
             }
@@ -31,7 +31,7 @@ Aggregated medical information:
             | llm
             | StrOutputParser(),
             "processing_state": RunnableLambda(lambda x: ["Knowledge aggregated. Generating response..."])
-        }
+        })
 
     def _format_source_knowledge_pairs(self, state):
         formatted_entries = []

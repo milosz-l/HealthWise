@@ -7,9 +7,10 @@ from database import Database
 
 
 class LoggingChain:
-    def __init__(self):
+    def __init__(self, ignore_db=False):
         self.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
-        self.db = Database()
+        if not ignore_db:
+            self.db = Database()
 
     def create(self):
         # first, summarize conversation

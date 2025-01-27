@@ -1,5 +1,6 @@
 from langchain_community.retrievers import TavilySearchAPIRetriever
 from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
 
 
 class KnowledgeChain:
@@ -13,7 +14,9 @@ class KnowledgeChain:
                 include_domains=[self.source],
                 search_depth="advanced",
             )
-        self.chain = llm | self._format_tavily_response
+            self.chain = llm | self._format_tavily_response
+        else:
+            self.chain = llm | StrOutputParser()
 
     def _format_tavily_response(self, retrieved_documents):
         formatted_response = []
@@ -27,7 +30,7 @@ class KnowledgeChain:
         try:
             retrieved_knowledge = self.chain.invoke(state["rephrased_request"])
         except:  # TODO: fix tavily error
-            pass
+            raise
         return {
             "source_knowledge_pairs": [
                 (self.source, retrieved_knowledge)
