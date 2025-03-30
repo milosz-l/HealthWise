@@ -228,3 +228,6 @@ docker-compose pull
 ...
 exit
 ```
+
+###### Route 53 DNS example
+![route53example](docs/route53.png)
