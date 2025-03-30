@@ -74,3 +74,7 @@ For now it's only black formatter.
 ```bash
 pre-commit run --all-files
 ```
+
+## Deployment
+
+For cloud deployment instructions take a look at branch called `feature/deployment`.
